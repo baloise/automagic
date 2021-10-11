@@ -15,6 +15,7 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <groovy.version>2.4.12</groovy.version>
 		<jenkins.version>2.265</jenkins.version>
 	</properties>
 
@@ -78,7 +79,7 @@
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
-			<version>2.4.2</version>
+			<version>${groovy.version}</version>
 			<scope>provided</scope>
 			<type>pom</type>
 		</dependency>
@@ -91,25 +92,25 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.assertj</groupId>
 			<artifactId>assertj-core</artifactId>
-			<version>3.13.2</version>
+			<version>3.21.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.tngtech.archunit</groupId>
 			<artifactId>archunit</artifactId>
-			<version>0.14.1</version>
+			<version>0.21.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.tngtech.archunit</groupId>
 			<artifactId>archunit-junit4</artifactId>
-			<version>0.14.1</version>
+			<version>0.21.0</version>
 			<scope>test</scope>
 		</dependency>
 
