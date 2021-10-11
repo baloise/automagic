@@ -1,0 +1,9 @@
+// use library source from git
+//library 'automagic-git@release'
+
+// use library source from disk
+library 'automagic@release'
+
+println(greet("el disco duro"))
+
+// use this job as template to develop pipelines for real projects
