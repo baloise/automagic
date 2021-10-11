@@ -31,8 +31,6 @@ library 'automagic@release'
 
 It is very easy to write pipeline steps - have a look at the existing code, i.e. [greet.groovy](./vars/greet.groovy). 
 
-Yes please take the time to write a minimal documentation ;-) 
-
 For a deep dive please read the [official documentation](https://jenkins.io/doc/book/pipeline/shared-libraries/).  
 
 
