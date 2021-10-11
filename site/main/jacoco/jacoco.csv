@@ -1,0 +1,4 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+automagic,com.baloise.automagic.common,Registry,19,71,0,0,1,2,3,2,3,2
+automagic,com.baloise.automagic.common,Registered,38,27,1,1,0,0,7,4,6,4
+automagic,com.baloise.automagic.demo.internal,GreetingImpl,12,70,2,4,0,2,2,4,0,3
