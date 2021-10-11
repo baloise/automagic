@@ -21,6 +21,12 @@ then use as any inbuilt command, for example
 greet 'World'
 ```
 
+We highly recommend to configure this as [global library](https://www.jenkins.io/doc/book/pipeline/shared-libraries/#global-shared-libraries) as in the dev setup, so you the code is trusted and you can shorten the import to
+
+```
+library 'automagic@release'
+```
+
 # Contribute
 
 It is very easy to write pipeline steps - have a look at the existing code, i.e. [greet.groovy](./vars/greet.groovy). 
