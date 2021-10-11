@@ -44,6 +44,11 @@ On the first run all necessary plugins are installed - this may take some minute
 
 Head over to [http://localhost:8080/](http://localhost:8080/) and use the template jobs to get you up and running 🚀.
 
+
+# architecture
+
+automagic is mainly a wrapper for the [oneIT marketplace api server](https://github.com/baloise/oim-api).
+
 ## behind a proxy
 Set `http_proxy` / `no_proxy` properties / environment variables, see [JENKINS-HOME-TEMPLATE/init.groovy.d/01_proxy.groovy](./JENKINS-HOME-TEMPLATE/init.groovy.d/01_proxy.groovy)
 
