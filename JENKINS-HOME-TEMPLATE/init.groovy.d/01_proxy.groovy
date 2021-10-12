@@ -2,6 +2,8 @@ import jenkins.model.*
 import java.util.logging.Logger
 Logger log = Logger.getLogger('init.groovy.d')
 
+// keep in sync with com.baloise.automagic.JenkinsMock.createProxy
+
 String proxyConf = System.getProperty("https_proxy") ?: System.getProperty("http_proxy") ?: System.getenv("https_proxy") ?: System.getenv("https_proxy")
 if(proxyConf) {
 	String noProxy = System.getProperty("no_proxy") ?: System.getenv("no_proxy")

@@ -18,6 +18,10 @@ library 'automagic@release'
 
 println(greet("el mundo"))
 
+def autolib = library('automagic@release').com.baloise.automagic
+def registry = autolib.common.Registry.get(this)
+println registry.getService('demo.GreetingService').greet("that was complicated")
+
 // use this job as playground / notice board in addition to the replay function
 
 '''

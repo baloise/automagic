@@ -1,14 +1,11 @@
-package com.baloise.automagic.demo;
+package com.baloise.automagic.demo
+
+import com.baloise.automagic.mock.MockRegistry
 
 import static org.assertj.core.api.Assertions.assertThat
 
 import org.junit.Before
 import org.junit.Test
-
-import com.baloise.automagic.JenkinsMock
-import com.baloise.automagic.common.Registry
-import com.baloise.automagic.demo.GreetingService
-import com.baloise.automagic.demo.internal.GreetingImpl
 
 
 class GreetingServiceTest {
@@ -17,7 +14,7 @@ class GreetingServiceTest {
 
 	@Before
 	void setUp() {
-		greeting = new GreetingImpl(registry:new Registry(JenkinsMock.create()))
+		greeting = MockRegistry.get().getService(GreetingService)
 	}
 
 	@Test
