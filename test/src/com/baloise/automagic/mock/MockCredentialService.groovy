@@ -10,5 +10,5 @@ class MockCredentialService implements CredentialsService{
         create(credentials[credentialId])
     }
 
-    PasswordAuthentication create(unpw){ new PasswordAuthentication(unpw.username,unpw.password.toCharArray())}
+    PasswordAuthentication create(unpw){ unpw ? new PasswordAuthentication(unpw.username,unpw.password.toCharArray()): null}
 }

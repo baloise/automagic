@@ -37,13 +37,18 @@ class MockRegistry extends Registry {
         File mockConfigurationFile = new File("test/resources/$mockConfigurationFilename")
         Map ret = [:]
         if(mockConfigurationFile.exists()) {
-            println "loading $mockConfigurationFile"
+            println "loading $mockConfigurationFile.absolutePath"
             ret = yaml.load(mockConfigurationFile.text)
         }
         mockConfigurationFile = new File(System.getProperty('user.home'), mockConfigurationFilename)
         if(mockConfigurationFile.exists()) {
-            println "loading $mockConfigurationFile"
-            ret = deepMergeMaps(ret, yaml.load(mockConfigurationFile.text))
+            def personal = yaml.load(mockConfigurationFile.text)
+            if(personal.enabled == null || personal.enabled){
+                println "loading $mockConfigurationFile.absolutePath"
+                ret = deepMergeMaps(ret, personal)
+            } else {
+                println "$mockConfigurationFile.absolutePath disabled"
+            }
         }
         ret
     }
