@@ -5,6 +5,7 @@ import com.baloise.automagic.common.Registered
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.git.GitService
 import com.baloise.automagic.properties.PropertyService
+import com.cloudbees.groovy.cps.NonCPS
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ResetCommand
 import org.eclipse.jgit.lib.StoredConfig
@@ -16,8 +17,10 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
 import static org.eclipse.jgit.lib.ConfigConstants.*
 import java.nio.file.Files;
 
+
 class GitImpl extends Registered implements GitService {
 
+	@NonCPS
 	private boolean isRemoteBranch(String url, String branch, CredentialsProvider cp){
 		Git.lsRemoteRepository()
 				.setRemote(url)
@@ -26,18 +29,20 @@ class GitImpl extends Registered implements GitService {
 				.call().name.contains(branch)
 	}
 
+	@NonCPS
 	String getAuthor(){ registry.getService(PropertyService).get('GIT_AUTHOR_NAME') }
+
+	@NonCPS
 	String getAuthorEmail(){registry.getService(PropertyService).get('GIT_AUTHOR_EMAIL')}
 
+	@NonCPS
 	@Override
-	String getUrl(String remote = 'origin', File workdir = new File('.')) {
-		Git git = new Git(new FileRepositoryBuilder()
-				.setWorkTree(workdir)
-				.build())
-		StoredConfig config = git.getRepository().getConfig()
-		config.getString(CONFIG_REMOTE_SECTION, remote, "url")
+	String getUrl() {
+		if(steps?.scm?.getClass()?.simpleName=='GitSCM') return steps.scm.userRemoteConfigs[0].url
+		throw new IllegalStateException('wrong scm:'+steps?.scm)
 	}
 
+	@NonCPS
 	@Override
 	public void checkout(final String url, final String branchName, final File workdir ) {
 		registry.setProxySelector()
@@ -69,7 +74,7 @@ class GitImpl extends Registered implements GitService {
 				Git git = Git.init()
 						.setDirectory(workdir)
 						.call()
-				Files.writeString(workdir.toPath().resolve(".automagic"), 'v'+ Automagic.VERSION);
+				new File(workdir, '.automagic').text = 'v'+ Automagic.VERSION
 				git.add().addFilepattern(".").call()
 
 				git.commit()
@@ -91,6 +96,7 @@ class GitImpl extends Registered implements GitService {
 
 	}
 
+	@NonCPS
 	@Override
 	void commitAllAndPush(File workdir, String message) {
 		if(!message) throw new IllegalArgumentException("commit message must not be empty")

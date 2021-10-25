@@ -8,7 +8,7 @@ public interface GitService {
 	 * @param remote default is 'origin'
 	 * @param workkdir default is new File('.')
 	 */
-	String getUrl(String remote, File workdir)
+	String getUrl()
 	void checkout(String url,  String branchName,  File workdir)
 	void commitAllAndPush(File workdir, String message)
 }

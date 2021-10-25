@@ -4,6 +4,7 @@ import com.baloise.automagic.common.Registry
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.properties.PropertyService
 import hudson.TestProxyConfiguration
+import hudson.plugins.git.GitSCM
 import org.yaml.snakeyaml.Yaml
 
 class MockRegistry extends Registry {
@@ -65,7 +66,7 @@ class MockRegistry extends Registry {
         steps.withCredentials = { array, func -> func() }
         steps.tool = { name -> return "/opt/maven" }
         steps.pwd = { -> return "/var/lib/jenkins/workspace/folder/job" }
-        steps.scm = null
+        steps.scm = new GitSCM('https://github.com/baloise/automagic.git')
         steps.stage = { text, func -> println(text); func() }
         steps.wrap = { map, func -> func() }
         steps.answerInput = { input -> println "answer input" }
