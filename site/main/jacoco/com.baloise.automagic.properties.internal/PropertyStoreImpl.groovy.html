@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PropertyStoreImpl.groovy</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">automagic</a> &gt; <a href="index.source.html" class="el_package">com.baloise.automagic.properties.internal</a> &gt; <span class="el_source">PropertyStoreImpl.groovy</span></div><h1>PropertyStoreImpl.groovy</h1><pre class="source lang-java linenums">package com.baloise.automagic.properties.internal
+
+import com.baloise.automagic.common.Registered
+import com.baloise.automagic.git.GitService
+import com.baloise.automagic.properties.PropertyStoreService
+import com.cloudbees.groovy.cps.NonCPS
+import org.yaml.snakeyaml.Yaml
+
+import static java.util.Collections.singletonMap
+
+class PropertyStoreImpl extends Registered implements PropertyStoreService {
+
+    String brachName = 'automagic'
+    Map&lt;String, String&gt; lazyProperties
+<span class="fc" id="L15">    File workdir = new File(&quot;../automagic/branches/&quot;+brachName)</span>
+<span class="fc" id="L16">    File yamlFile = new File(workdir, 'PropertyStoreService.yaml')</span>
+
+    @NonCPS
+    private Map&lt;String, String&gt; getProps() {
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        if(lazyProperties == null) {</span>
+<span class="nc" id="L21">            GitService git = registry.getService(GitService)</span>
+<span class="nc" id="L22">            git.checkout(git.url, brachName, workdir)</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">            lazyProperties = yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]</span>
+        }
+<span class="nc" id="L25">        lazyProperties</span>
+    }
+
+    @NonCPS
+    @Override
+    String get(String key) {
+<span class="nc" id="L31">       props[key]</span>
+    }
+
+    @NonCPS
+    @Override
+    PropertyStoreService put(String key, String value) {
+<span class="nc" id="L37">        put(singletonMap(key,value))</span>
+    }
+
+    @NonCPS
+    @Override
+    PropertyStoreService put(Map&lt;String,String&gt; key2value) {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if(key2value.every {props[it.key] == it.value}) {</span>
+<span class="nc" id="L44">            return this</span>
+        }
+<span class="nc" id="L46">        props.putAll(key2value)</span>
+<span class="nc" id="L47">        yamlFile.text = new Yaml().dumpAsMap(props)</span>
+<span class="nc" id="L48">        GitService git = registry.getService(GitService)</span>
+<span class="nc" id="L49">        git.commitAllAndPush(workdir, &quot;PropertyStore updated ${key2value.keySet()}&quot;)</span>
+<span class="nc" id="L50">        return this</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

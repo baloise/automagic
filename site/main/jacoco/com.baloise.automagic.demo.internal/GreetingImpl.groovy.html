@@ -4,9 +4,9 @@ import com.baloise.automagic.common.Registered
 import com.baloise.automagic.demo.GreetingService
 
 class GreetingImpl extends Registered implements GreetingService {
-	
+
     String greet(String name = &quot;Nobody&quot;) {
-<span class="fc bfc" id="L9" title="All 2 branches covered.">		if(name) name = &quot; ${name}&quot;</span>
+<span class="fc bfc" id="L9" title="All 2 branches covered.">        if(name) name = &quot; ${name}&quot;</span>
 <span class="pc" id="L10">		return &quot;¡Hola${name}!&quot;</span>
     }
 }

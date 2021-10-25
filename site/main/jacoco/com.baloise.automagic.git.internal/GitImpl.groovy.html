@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GitImpl.groovy</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">automagic</a> &gt; <a href="index.source.html" class="el_package">com.baloise.automagic.git.internal</a> &gt; <span class="el_source">GitImpl.groovy</span></div><h1>GitImpl.groovy</h1><pre class="source lang-java linenums">package com.baloise.automagic.git.internal
+
+import com.baloise.automagic.common.Automagic
+import com.baloise.automagic.common.Registered
+import com.baloise.automagic.credentials.CredentialsService
+import com.baloise.automagic.git.GitService
+import com.baloise.automagic.properties.PropertyService
+import com.cloudbees.groovy.cps.NonCPS
+import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.api.ResetCommand
+import org.eclipse.jgit.lib.StoredConfig
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.transport.CredentialsProvider
+import org.eclipse.jgit.transport.RefSpec
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider
+
+import static org.eclipse.jgit.lib.ConfigConstants.*
+import java.nio.file.Files;
+
+
+class GitImpl extends Registered implements GitService {
+
+	@NonCPS
+	private boolean isRemoteBranch(String url, String branch, CredentialsProvider cp){
+<span class="pc" id="L25">		Git.lsRemoteRepository()</span>
+				.setRemote(url)
+				.setCredentialsProvider(cp)
+				.setHeads(true)
+				.call().name.contains(branch)
+	}
+
+	@NonCPS
+<span class="pc" id="L33">	String getAuthor(){ registry.getService(PropertyService).get('GIT_AUTHOR_NAME') }</span>
+
+	@NonCPS
+<span class="pc" id="L36">	String getAuthorEmail(){registry.getService(PropertyService).get('GIT_AUTHOR_EMAIL')}</span>
+
+	@NonCPS
+	@Override
+	String getUrl() {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">		if(steps?.scm?.getClass()?.simpleName=='GitSCM') return steps.scm.userRemoteConfigs[0].url</span>
+<span class="nc" id="L42">		throw new IllegalStateException('wrong scm:'+steps?.scm)</span>
+	}
+
+	@NonCPS
+	@Override
+	public void checkout(final String url, final String branchName, final File workdir ) {
+<span class="fc" id="L48">		registry.setProxySelector()</span>
+<span class="fc" id="L49">		PasswordAuthentication pwa = registry.getService(CredentialsService).getUsernamePassword('GIT')</span>
+<span class="fc" id="L50">		final String branch = &quot;refs/heads/&quot;+branchName</span>
+<span class="fc" id="L51">		CredentialsProvider cp = new UsernamePasswordCredentialsProvider(pwa.userName, pwa.password)</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if(workdir.exists()) {</span>
+<span class="fc" id="L53">			Git git = new Git(new FileRepositoryBuilder()</span>
+				.setWorkTree(workdir)
+				.build())
+<span class="fc" id="L56">			git.fetch()</span>
+					.setRemote(&quot;origin&quot;)
+<span class="fc" id="L58">					.setRefSpecs(new RefSpec(branch))</span>
+					.setCredentialsProvider(cp).call()
+<span class="fc" id="L60">			git.checkout().setName(branch).setForce(true).call()</span>
+<span class="fc" id="L61">			git.reset().setRef(branch).setMode(ResetCommand.ResetType.HARD).call()</span>
+<span class="fc" id="L62">			git.clean().setForce(true).call()</span>
+		} else {
+<span class="fc" id="L64">			workdir.mkdirs()</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			if(isRemoteBranch(url,branch,cp)) {</span>
+<span class="fc" id="L66">				Git git = Git.cloneRepository()</span>
+					.setURI(url)
+<span class="fc" id="L68">					.setBranchesToClone([branch])</span>
+					.setBranch(branch)
+					.setDirectory(workdir)
+					.setCredentialsProvider(cp)
+					.call()
+			} else {
+<span class="fc" id="L74">				Git git = Git.init()</span>
+						.setDirectory(workdir)
+						.call()
+<span class="fc" id="L77">				new File(workdir, '.automagic').text = 'v'+ Automagic.VERSION</span>
+<span class="fc" id="L78">				git.add().addFilepattern(&quot;.&quot;).call()</span>
+
+<span class="fc" id="L80">				git.commit()</span>
+						.setCommitter(author, authorEmail)
+						.setMessage('initial commit').call()
+<span class="fc" id="L83">				git.branchRename().setNewName(branchName).call()</span>
+<span class="fc" id="L84">				StoredConfig config = git.getRepository().getConfig()</span>
+<span class="fc" id="L85">				config.setString(CONFIG_REMOTE_SECTION, &quot;origin&quot;, &quot;url&quot;, url)</span>
+<span class="fc" id="L86">				config.setString(CONFIG_REMOTE_SECTION, &quot;origin&quot;, &quot;fetch&quot;, &quot;+refs/heads/*:refs/remotes/origin/*&quot;);</span>
+<span class="fc" id="L87">				config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;remote&quot;, &quot;origin&quot;);</span>
+<span class="fc" id="L88">				config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;rebase&quot;, &quot;false&quot;);</span>
+<span class="fc" id="L89">				config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;merge&quot;, &quot;refs/heads/$branchName&quot;);</span>
+<span class="fc" id="L90">				config.save();</span>
+<span class="fc" id="L91">				git.push().setCredentialsProvider(cp).call()</span>
+			}
+
+		}
+
+
+	}
+
+	@NonCPS
+	@Override
+	void commitAllAndPush(File workdir, String message) {
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">		if(!message) throw new IllegalArgumentException(&quot;commit message must not be empty&quot;)</span>
+<span class="pc bpc" id="L103" title="2 of 4 branches missed.">		if(!workdir.exists()) throw new IllegalArgumentException(&quot;$workdir not found&quot;)</span>
+<span class="fc" id="L104">		registry.setProxySelector()</span>
+<span class="fc" id="L105">		PasswordAuthentication pwa = registry.getService(CredentialsService).getUsernamePassword('GIT')</span>
+<span class="fc" id="L106">		CredentialsProvider cp = new UsernamePasswordCredentialsProvider(pwa.userName, pwa.password)</span>
+
+<span class="fc" id="L108">		Git git = new Git(new FileRepositoryBuilder()</span>
+				.setWorkTree(workdir)
+				.build())
+
+<span class="fc" id="L112">		git.add().addFilepattern(&quot;.&quot;).call()</span>
+
+<span class="fc" id="L114">		git.commit()</span>
+				.setCommitter(author, authorEmail)
+				.setMessage(message).call()
+
+<span class="fc" id="L118">		git.push().setCredentialsProvider(cp).call()</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
