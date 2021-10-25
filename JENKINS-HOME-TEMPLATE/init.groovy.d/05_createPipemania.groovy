@@ -16,7 +16,7 @@ if(Jenkins.instance.getItem(jobName)) {
 // use library source from disk 
 library 'automagic@release'
 
-println(greet("el mundo"))
+println(am_greet("el mundo"))
 
 def autolib = library('automagic@release').com.baloise.automagic
 def registry = autolib.common.Registry.get(this)
