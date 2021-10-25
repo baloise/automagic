@@ -26,6 +26,7 @@ class Registry implements Serializable {
         registerService(PropertyStoreService, new PropertyStoreImpl(registry: this, steps: steps))
     }
 
+    @NonCPS
     static Registry get(steps){
         Binding binding = steps.binding
         if(!binding.hasVariable(Registry.class.name))
@@ -38,6 +39,7 @@ class Registry implements Serializable {
         serviceRegistry[serviceClazz.name] =  impl
     }
 
+    @NonCPS
     def setProxySelector() {
         if (jenkins.proxy)
             ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)
@@ -53,6 +55,7 @@ class Registry implements Serializable {
         serviceRegistry['com.baloise.automagic.'+serviceClazz]
     }
 
+    @NonCPS
     def getJenkins(){
         Jenkins.instanceOrNull
     }

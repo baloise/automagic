@@ -1,5 +1,6 @@
 package com.baloise.automagic.common.internal
 
+import com.cloudbees.groovy.cps.NonCPS
 import hudson.ProxyConfiguration
 
 class JenkinsProxySelector extends ProxySelector implements Serializable{
@@ -12,11 +13,13 @@ class JenkinsProxySelector extends ProxySelector implements Serializable{
     }
 
     @Override
+    @NonCPS
     List<Proxy> select(URI uri) {
         return [proxyConfiguration.createProxy(uri.getHost())]
     }
 
     @Override
+    @NonCPS
     void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
         println 'connectFailed: '+ioe?.message
     }
