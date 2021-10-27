@@ -5,7 +5,8 @@ import com.baloise.automagic.properties.PropertyService
 import org.junit.Before
 import org.junit.Test
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.assertNull;
 
 public class CredentialsServiceTest {
 
@@ -16,14 +17,18 @@ public class CredentialsServiceTest {
         service = MockRegistry.get().getService(CredentialsService)
     }
 
-    @Test
+    @Test()
     void getInexistant() {
-        assertEquals(null, service.getUsernamePassword("inexistant"))
+        service.withCredentials("inexistant", ["nope"]){
+            assertNull(NOPE)
+        }
     }
+
     @Test
     void getGIT() {
-        def up = service.getUsernamePassword("GIT")
-        assertEquals('sesam', new String(up.getPassword()))
-        assertEquals('automagic', up.getUserName() )
+        service.withCredentials("secrets/GIT", ["nope"]){
+            assertEquals('sesam', PASSWORD)
+            assertEquals('automagic', USERNAME )
+        }
     }
 }

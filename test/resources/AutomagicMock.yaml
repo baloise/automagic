@@ -1,7 +1,7 @@
 credentials:
-  GIT:
-    username : automagic
-    password : sesam
+  secrets/GIT:
+    USERNAME : automagic
+    PASSWORD : sesam
 properties:
   AUTOMAGIC_GIT_AUTHOR_EMAIL :  automagic@github.com
   AUTOMAGIC_GIT_AUTHOR_NAME  :  automagic

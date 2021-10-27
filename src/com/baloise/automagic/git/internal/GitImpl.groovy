@@ -46,51 +46,51 @@ class GitImpl extends Registered implements GitService {
 	@Override
 	public void checkout(final String url, final String branchName, final File workdir ) {
 		registry.withProxySelector {
-			PasswordAuthentication pwa = registry.getService(CredentialsService).getUsernamePassword('GIT')
-			final String branch = "refs/heads/" + branchName
-			CredentialsProvider cp = new UsernamePasswordCredentialsProvider(pwa.userName, pwa.password)
-			if (workdir.exists()) {
-				Git git = new Git(new FileRepositoryBuilder()
-						.setWorkTree(workdir)
-						.build())
-				git.fetch()
-						.setRemote("origin")
-						.setRefSpecs(new RefSpec(branch))
-						.setCredentialsProvider(cp).call()
-				git.checkout().setName(branch).setForce(true).call()
-				git.reset().setRef(branch).setMode(ResetCommand.ResetType.HARD).call()
-				git.clean().setForce(true).call()
-			} else {
-				workdir.mkdirs()
-				if (isRemoteBranch(url, branch, cp)) {
-					Git git = Git.cloneRepository()
-							.setURI(url)
-							.setBranchesToClone([branch])
-							.setBranch(branch)
-							.setDirectory(workdir)
-							.setCredentialsProvider(cp)
-							.call()
+			registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {
+				final String branch = "refs/heads/" + branchName
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(USERNAME,PASSWORD)
+				if (workdir.exists()) {
+					Git git = new Git(new FileRepositoryBuilder()
+							.setWorkTree(workdir)
+							.build())
+					git.fetch()
+							.setRemote("origin")
+							.setRefSpecs(new RefSpec(branch))
+							.setCredentialsProvider(cp).call()
+					git.checkout().setName(branch).setForce(true).call()
+					git.reset().setRef(branch).setMode(ResetCommand.ResetType.HARD).call()
+					git.clean().setForce(true).call()
 				} else {
-					Git git = Git.init()
-							.setDirectory(workdir)
-							.call()
-					new File(workdir, '.automagic').text = 'v' + Automagic.VERSION
-					git.add().addFilepattern(".").call()
+					workdir.mkdirs()
+					if (isRemoteBranch(url, branch, cp)) {
+						Git git = Git.cloneRepository()
+								.setURI(url)
+								.setBranchesToClone([branch])
+								.setBranch(branch)
+								.setDirectory(workdir)
+								.setCredentialsProvider(cp)
+								.call()
+					} else {
+						Git git = Git.init()
+								.setDirectory(workdir)
+								.call()
+						new File(workdir, '.automagic').text = 'v' + Automagic.VERSION
+						git.add().addFilepattern(".").call()
 
-					git.commit()
-							.setCommitter(author, authorEmail)
-							.setMessage('initial commit').call()
-					git.branchRename().setNewName(branchName).call()
-					StoredConfig config = git.getRepository().getConfig()
-					config.setString(CONFIG_REMOTE_SECTION, "origin", "url", url)
-					config.setString(CONFIG_REMOTE_SECTION, "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
-					config.setString(CONFIG_BRANCH_SECTION, branchName, "remote", "origin");
-					config.setString(CONFIG_BRANCH_SECTION, branchName, "rebase", "false");
-					config.setString(CONFIG_BRANCH_SECTION, branchName, "merge", "refs/heads/$branchName");
-					config.save();
-					git.push().setCredentialsProvider(cp).call()
+						git.commit()
+								.setCommitter(author, authorEmail)
+								.setMessage('initial commit').call()
+						git.branchRename().setNewName(branchName).call()
+						StoredConfig config = git.getRepository().getConfig()
+						config.setString(CONFIG_REMOTE_SECTION, "origin", "url", url)
+						config.setString(CONFIG_REMOTE_SECTION, "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
+						config.setString(CONFIG_BRANCH_SECTION, branchName, "remote", "origin");
+						config.setString(CONFIG_BRANCH_SECTION, branchName, "rebase", "false");
+						config.setString(CONFIG_BRANCH_SECTION, branchName, "merge", "refs/heads/$branchName");
+						config.save();
+						git.push().setCredentialsProvider(cp).call()
+					}
 				}
-
 			}
 		}
 	}
@@ -101,20 +101,21 @@ class GitImpl extends Registered implements GitService {
 		if(!message) throw new IllegalArgumentException("commit message must not be empty")
 		if(!workdir.exists()) throw new IllegalArgumentException("$workdir not found")
 		registry.withProxySelector {
-			PasswordAuthentication pwa = registry.getService(CredentialsService).getUsernamePassword('GIT')
-			CredentialsProvider cp = new UsernamePasswordCredentialsProvider(pwa.userName, pwa.password)
+			registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(USERNAME, PASSWORD)
 
-			Git git = new Git(new FileRepositoryBuilder()
-					.setWorkTree(workdir)
-					.build())
+				Git git = new Git(new FileRepositoryBuilder()
+						.setWorkTree(workdir)
+						.build())
 
-			git.add().addFilepattern(".").call()
+				git.add().addFilepattern(".").call()
 
-			git.commit()
-					.setCommitter(author, authorEmail)
-					.setMessage(message).call()
+				git.commit()
+						.setCommitter(author, authorEmail)
+						.setMessage(message).call()
 
-			git.push().setCredentialsProvider(cp).call()
+				git.push().setCredentialsProvider(cp).call()
+			}
 		}
 	}
 }
