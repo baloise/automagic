@@ -57,8 +57,6 @@ automagic is mainly a wrapper for the [oneIT marketplace api server](https://git
 Set `http_proxy` / `no_proxy` properties / environment variables, see [JENKINS-HOME-TEMPLATE/init.groovy.d/01_proxy.groovy](./JENKINS-HOME-TEMPLATE/init.groovy.d/01_proxy.groovy)
 
 
-https://baloise.github.io/automagic/site/main/linecoverage.svg
-
 If you need a forwarding proxy, have a look at [https://github.com/baloise/proxy](https://github.com/baloise/proxy#installation) 
 
 
