@@ -10,7 +10,7 @@ import com.cloudbees.plugins.credentials.domains.Domain
 class CredentialsImpl extends Registered implements CredentialsService {
 
 
-    @NonCPS
+    
     @Override
     <T> T withCredentials(String credentialId, List<String> keys, Closure<T> action){
         steps.withVault(vaultSecrets: [

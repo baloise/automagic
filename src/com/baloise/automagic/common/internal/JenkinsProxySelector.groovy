@@ -13,13 +13,13 @@ class JenkinsProxySelector extends ProxySelector implements Serializable{
     }
 
     @Override
-    @NonCPS
+    
     List<java.net.Proxy> select(URI uri) {
         return [proxyConfiguration.createProxy(uri.getHost())]
     }
 
     @Override
-    @NonCPS
+    
     void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
         println 'connectFailed: '+ioe?.message
     }

@@ -20,7 +20,7 @@ import java.nio.file.Files;
 
 class GitImpl extends Registered implements GitService {
 
-	@NonCPS
+	
 	private boolean isRemoteBranch(String url, String branch, CredentialsProvider cp){
 		Git.lsRemoteRepository()
 				.setRemote(url)
@@ -29,24 +29,24 @@ class GitImpl extends Registered implements GitService {
 				.call().name.contains(branch)
 	}
 
-	@NonCPS
+	
 	String getAuthor(){ registry.getService(PropertyService).get('GIT_AUTHOR_NAME') }
 
-	@NonCPS
+	
 	String getAuthorEmail(){registry.getService(PropertyService).get('GIT_AUTHOR_EMAIL')}
 
-	@NonCPS
+	
 	@Override
 	String getUrl() {
 		if(steps?.scm?.getClass()?.simpleName=='GitSCM') return steps.scm.userRemoteConfigs[0].url
 		throw new IllegalStateException('wrong scm:'+steps?.scm)
 	}
 
-	@NonCPS
+	
 	@Override
 	public void checkout(final String url, final String branchName, final File workdir ) {
-		registry.withProxySelector {
-			registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {
+		registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {
+			registry.withProxySelector {
 				final String branch = "refs/heads/" + branchName
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(USERNAME,PASSWORD)
 				if (workdir.exists()) {
@@ -95,13 +95,13 @@ class GitImpl extends Registered implements GitService {
 		}
 	}
 
-	@NonCPS
+	
 	@Override
 	void commitAllAndPush(File workdir, String message) {
 		if(!message) throw new IllegalArgumentException("commit message must not be empty")
 		if(!workdir.exists()) throw new IllegalArgumentException("$workdir not found")
-		registry.withProxySelector {
-			registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {
+		registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {
+			registry.withProxySelector {
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(USERNAME, PASSWORD)
 
 				Git git = new Git(new FileRepositoryBuilder()
