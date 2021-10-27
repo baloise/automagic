@@ -60,6 +60,7 @@ class Registry implements Serializable {
         serviceRegistry['com.baloise.automagic.'+serviceClazz]
     }
 
+    @NonCPS
     def getJenkins(){
         Jenkins.instanceOrNull
     }
