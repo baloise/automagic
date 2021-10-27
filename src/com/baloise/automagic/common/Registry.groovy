@@ -40,11 +40,11 @@ class Registry implements Serializable {
     }
 
     @NonCPS
-    def withProxySelector(Closure action) {
+    <T> T withProxySelector(Closure<T> action) {
         ProxySelector theDefault = ProxySelector.default
         try {
             if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)
-            action()
+            return action()
         } finally {
             ProxySelector.default = theDefault
         }

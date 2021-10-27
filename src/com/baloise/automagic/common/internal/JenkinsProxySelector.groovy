@@ -14,7 +14,7 @@ class JenkinsProxySelector extends ProxySelector implements Serializable{
 
     @Override
     @NonCPS
-    List<Proxy> select(URI uri) {
+    List<java.net.Proxy> select(URI uri) {
         return [proxyConfiguration.createProxy(uri.getHost())]
     }
 
