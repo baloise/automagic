@@ -1,7 +1,7 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 automagic,com.baloise.automagic.common.internal,JenkinsProxySelector,66,0,0,0,3,0,4,0,4,0
 automagic,com.baloise.automagic.common,Automagic,14,7,0,0,0,0,1,1,1,1
-automagic,com.baloise.automagic.common,Registry,149,257,5,1,6,11,8,4,5,4
+automagic,com.baloise.automagic.common,Registry,123,232,5,1,6,9,8,4,5,4
 automagic,com.baloise.automagic.common,Registered,26,25,1,1,0,0,4,3,3,3
 automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl._put_closure1,41,0,0,0,1,0,3,0,3,0
 automagic,com.baloise.automagic.properties.internal,PropertyImpl,41,5,0,0,1,0,1,1,1,1
