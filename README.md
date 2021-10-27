@@ -2,9 +2,6 @@
 
 automagic is a platform to for declarative life cycle and configuration management of virtual machines at Baloise. It allows you to create, change and delete infrastructure, middleware and applications using a declarative GitOps approach. automagic uses git for source code management and Jenkins for CI/CD pipeline automation.
 
-
-Please find all further information in the [user manual](https://github.com/baloise/automagic/tree/main/docs/manual).
-
 # Use
  
 To use in your pipeline add the following to the top of your Jenkinsfile
