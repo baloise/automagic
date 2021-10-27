@@ -39,15 +39,9 @@ class Registry implements Serializable {
         serviceRegistry[serviceClazz.name] =  impl
     }
 	
-	@NonCPS
     public <T> T withProxySelector(Closure<T> action) {
-        ProxySelector theDefault = ProxySelector.default
-        try {
-            if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)
-            return action()
-        } finally {
-            ProxySelector.default = theDefault
-        }
+       if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)
+	   return action()
     }
 
     
@@ -60,7 +54,6 @@ class Registry implements Serializable {
         serviceRegistry['com.baloise.automagic.'+serviceClazz]
     }
 
-    @NonCPS
     def getJenkins(){
         Jenkins.instanceOrNull
     }
