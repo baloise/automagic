@@ -40,24 +40,29 @@ class Registry implements Serializable {
     }
 
     @NonCPS
-    def setProxySelector() {
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (jenkins.proxy)</span>
-<span class="pc" id="L45">            ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)</span>
+    &lt;T&gt; T withProxySelector(Closure&lt;T&gt; action) {
+<span class="fc" id="L44">        ProxySelector theDefault = ProxySelector.default</span>
+        try {
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">            if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)</span>
+<span class="fc" id="L47">            return action()</span>
+        } finally {
+<span class="pc" id="L49">            ProxySelector.default = theDefault</span>
+        }
     }
 
     @NonCPS
     &lt;T&gt; T getService(Class&lt;T&gt; serviceClazz) {
-<span class="pc" id="L50">        serviceRegistry[serviceClazz.name]</span>
+<span class="pc" id="L55">        serviceRegistry[serviceClazz.name]</span>
     }
 
     @NonCPS
     def getService(String serviceClazz) {
-<span class="nc" id="L55">        serviceRegistry['com.baloise.automagic.'+serviceClazz]</span>
+<span class="nc" id="L60">        serviceRegistry['com.baloise.automagic.'+serviceClazz]</span>
     }
 
     @NonCPS
     def getJenkins(){
-<span class="nc" id="L60">        Jenkins.instanceOrNull</span>
+<span class="nc" id="L65">        Jenkins.instanceOrNull</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
