@@ -11,7 +11,7 @@ import jenkins.model.Jenkins
 class PropertyImpl extends Registered implements PropertyService {
 
     @Override
-    @NonCPS
+    
     String get(String key) {
 <span class="nc" id="L16">        return Jenkins.instance.globalNodeProperties.getAll(hudson.slaves.EnvironmentVariablesNodeProperty.class)[0].envVars['AUTOMAGIC_'+key]</span>
     }

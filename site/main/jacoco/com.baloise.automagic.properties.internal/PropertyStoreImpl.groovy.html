@@ -15,7 +15,7 @@ class PropertyStoreImpl extends Registered implements PropertyStoreService {
 <span class="fc" id="L15">    File workdir = new File(&quot;../automagic/branches/&quot;+brachName)</span>
 <span class="fc" id="L16">    File yamlFile = new File(workdir, 'PropertyStoreService.yaml')</span>
 
-    @NonCPS
+    
     private Map&lt;String, String&gt; getProps() {
 <span class="nc bnc" id="L20" title="All 2 branches missed.">        if(lazyProperties == null) {</span>
 <span class="nc" id="L21">            GitService git = registry.getService(GitService)</span>
@@ -25,19 +25,19 @@ class PropertyStoreImpl extends Registered implements PropertyStoreService {
 <span class="nc" id="L25">        lazyProperties</span>
     }
 
-    @NonCPS
+    
     @Override
     String get(String key) {
 <span class="nc" id="L31">       props[key]</span>
     }
 
-    @NonCPS
+    
     @Override
     PropertyStoreService put(String key, String value) {
 <span class="nc" id="L37">        put(singletonMap(key,value))</span>
     }
 
-    @NonCPS
+    
     @Override
     PropertyStoreService put(Map&lt;String,String&gt; key2value) {
 <span class="nc bnc" id="L43" title="All 2 branches missed.">        if(key2value.every {props[it.key] == it.value}) {</span>

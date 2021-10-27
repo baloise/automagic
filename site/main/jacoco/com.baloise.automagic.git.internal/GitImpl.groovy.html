@@ -20,7 +20,7 @@ import java.nio.file.Files;
 
 class GitImpl extends Registered implements GitService {
 
-	@NonCPS
+	
 	private boolean isRemoteBranch(String url, String branch, CredentialsProvider cp){
 <span class="pc" id="L25">		Git.lsRemoteRepository()</span>
 				.setRemote(url)
@@ -29,24 +29,24 @@ class GitImpl extends Registered implements GitService {
 				.call().name.contains(branch)
 	}
 
-	@NonCPS
+	
 <span class="pc" id="L33">	String getAuthor(){ registry.getService(PropertyService).get('GIT_AUTHOR_NAME') }</span>
 
-	@NonCPS
+	
 <span class="pc" id="L36">	String getAuthorEmail(){registry.getService(PropertyService).get('GIT_AUTHOR_EMAIL')}</span>
 
-	@NonCPS
+	
 	@Override
 	String getUrl() {
 <span class="pc bpc" id="L41" title="1 of 2 branches missed.">		if(steps?.scm?.getClass()?.simpleName=='GitSCM') return steps.scm.userRemoteConfigs[0].url</span>
 <span class="nc" id="L42">		throw new IllegalStateException('wrong scm:'+steps?.scm)</span>
 	}
 
-	@NonCPS
+	
 	@Override
 	public void checkout(final String url, final String branchName, final File workdir ) {
-<span class="fc" id="L48">		registry.withProxySelector {</span>
-<span class="pc" id="L49">			registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {</span>
+<span class="fc" id="L48">		registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {</span>
+<span class="pc" id="L49">			registry.withProxySelector {</span>
 <span class="fc" id="L50">				final String branch = &quot;refs/heads/&quot; + branchName</span>
 <span class="fc" id="L51">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(USERNAME,PASSWORD)</span>
 <span class="fc bfc" id="L52" title="All 2 branches covered.">				if (workdir.exists()) {</span>
@@ -95,13 +95,13 @@ class GitImpl extends Registered implements GitService {
 		}
 	}
 
-	@NonCPS
+	
 	@Override
 	void commitAllAndPush(File workdir, String message) {
 <span class="pc bpc" id="L101" title="2 of 4 branches missed.">		if(!message) throw new IllegalArgumentException(&quot;commit message must not be empty&quot;)</span>
 <span class="pc bpc" id="L102" title="2 of 4 branches missed.">		if(!workdir.exists()) throw new IllegalArgumentException(&quot;$workdir not found&quot;)</span>
-<span class="fc" id="L103">		registry.withProxySelector {</span>
-<span class="pc" id="L104">			registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {</span>
+<span class="fc" id="L103">		registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {</span>
+<span class="pc" id="L104">			registry.withProxySelector {</span>
 <span class="fc" id="L105">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(USERNAME, PASSWORD)</span>
 
 <span class="fc" id="L107">				Git git = new Git(new FileRepositoryBuilder()</span>

@@ -26,7 +26,7 @@ class Registry implements Serializable {
 <span class="fc" id="L26">        registerService(PropertyStoreService, new PropertyStoreImpl(registry: this, steps: steps))</span>
     }
 
-    @NonCPS
+    
     static Registry get(steps){
 <span class="nc" id="L31">        Binding binding = steps.binding</span>
 <span class="nc bnc" id="L32" title="All 4 branches missed.">        if(!binding.hasVariable(Registry.class.name))</span>
@@ -34,13 +34,13 @@ class Registry implements Serializable {
 <span class="nc" id="L34">        binding.getVariable(Registry.class.name)</span>
     }
 
-    @NonCPS
+	@NonCPS
     protected &lt;T&gt; void registerService(Class&lt;T&gt; serviceClazz, T impl) {
 <span class="fc" id="L39">        serviceRegistry[serviceClazz.name] =  impl</span>
     }
-
-    @NonCPS
-    &lt;T&gt; T withProxySelector(Closure&lt;T&gt; action) {
+	
+	@NonCPS
+    public &lt;T&gt; T withProxySelector(Closure&lt;T&gt; action) {
 <span class="fc" id="L44">        ProxySelector theDefault = ProxySelector.default</span>
         try {
 <span class="pc bpc" id="L46" title="1 of 2 branches missed.">            if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)</span>
@@ -50,19 +50,18 @@ class Registry implements Serializable {
         }
     }
 
-    @NonCPS
-    &lt;T&gt; T getService(Class&lt;T&gt; serviceClazz) {
+    
+    public &lt;T&gt; T getService(Class&lt;T&gt; serviceClazz) {
 <span class="pc" id="L55">        serviceRegistry[serviceClazz.name]</span>
     }
 
-    @NonCPS
+    
     def getService(String serviceClazz) {
 <span class="nc" id="L60">        serviceRegistry['com.baloise.automagic.'+serviceClazz]</span>
     }
 
-    @NonCPS
     def getJenkins(){
-<span class="nc" id="L65">        Jenkins.instanceOrNull</span>
+<span class="nc" id="L64">        Jenkins.instanceOrNull</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
