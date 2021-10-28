@@ -19,7 +19,7 @@ class PropertyStoreImpl extends Registered implements PropertyStoreService {
 	    
     private Map<String, String> getProps() {
         if(lazyProperties == null) {
-			workdir = new File(steps.env.WORKSPACE+"-branches/"+brachName)
+			workdir = new File(System.getProperty("java.io.tmpdir"),steps.env.JOB_NAME+ "/branches/"+brachName)
 			yamlFile = new File(workdir, 'PropertyStoreService.yaml')
             GitService git = registry.getService(GitService)
             git.checkout(git.url, brachName, workdir)
