@@ -38,10 +38,16 @@ class Registry implements Serializable {
     protected <T> void registerService(Class<T> serviceClazz, T impl) {
         serviceRegistry[serviceClazz.name] =  impl
     }
-	
-    public <T> T withProxySelector(Closure<T> action) {
-       if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)
-	   return action()
+
+    @NonCPS
+    <T> T withProxySelector(Closure<T> action) {
+        ProxySelector theDefault = ProxySelector.default
+        try {
+            if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)
+            return action()
+        } finally {
+            ProxySelector.default = theDefault
+        }
     }
 
     
