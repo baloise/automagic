@@ -45,10 +45,10 @@ class GitImpl extends Registered implements GitService {
 	
 	@Override
 	public void checkout(final String url, final String branchName, final File workdir ) {
-<span class="fc" id="L48">		registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {</span>
-<span class="pc" id="L49">			registry.withProxySelector {</span>
+		//registry.withProxySelector {
+<span class="fc" id="L49">			registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {</span>
 <span class="fc" id="L50">				final String branch = &quot;refs/heads/&quot; + branchName</span>
-<span class="fc" id="L51">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(USERNAME,PASSWORD)</span>
+<span class="fc" id="L51">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.USERNAME,steps.PASSWORD)</span>
 <span class="fc bfc" id="L52" title="All 2 branches covered.">				if (workdir.exists()) {</span>
 <span class="fc" id="L53">					Git git = new Git(new FileRepositoryBuilder()</span>
 							.setWorkTree(workdir)
@@ -90,9 +90,9 @@ class GitImpl extends Registered implements GitService {
 <span class="fc" id="L90">						config.save();</span>
 <span class="pc" id="L91">						git.push().setCredentialsProvider(cp).call()</span>
 					}
-				}
+			  }
 			}
-		}
+		//}
 	}
 
 	
@@ -100,9 +100,9 @@ class GitImpl extends Registered implements GitService {
 	void commitAllAndPush(File workdir, String message) {
 <span class="pc bpc" id="L101" title="2 of 4 branches missed.">		if(!message) throw new IllegalArgumentException(&quot;commit message must not be empty&quot;)</span>
 <span class="pc bpc" id="L102" title="2 of 4 branches missed.">		if(!workdir.exists()) throw new IllegalArgumentException(&quot;$workdir not found&quot;)</span>
-<span class="fc" id="L103">		registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {</span>
-<span class="pc" id="L104">			registry.withProxySelector {</span>
-<span class="fc" id="L105">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(USERNAME, PASSWORD)</span>
+		//registry.withProxySelector {
+<span class="fc" id="L104">			registry.getService(CredentialsService).withCredentials('secrets/GIT',['USERNAME', 'PASSWORD']) {</span>
+<span class="fc" id="L105">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.USERNAME, steps.PASSWORD)</span>
 
 <span class="fc" id="L107">				Git git = new Git(new FileRepositoryBuilder()</span>
 						.setWorkTree(workdir)
@@ -116,7 +116,7 @@ class GitImpl extends Registered implements GitService {
 
 <span class="pc" id="L117">				git.push().setCredentialsProvider(cp).call()</span>
 			}
-		}
+		//}
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

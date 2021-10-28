@@ -38,24 +38,30 @@ class Registry implements Serializable {
     protected &lt;T&gt; void registerService(Class&lt;T&gt; serviceClazz, T impl) {
 <span class="fc" id="L39">        serviceRegistry[serviceClazz.name] =  impl</span>
     }
-	
-    public &lt;T&gt; T withProxySelector(Closure&lt;T&gt; action) {
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">       if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)</span>
-<span class="pc" id="L44">	   return action()</span>
+
+    @NonCPS
+    &lt;T&gt; T withProxySelector(Closure&lt;T&gt; action) {
+<span class="nc" id="L44">        ProxySelector theDefault = ProxySelector.default</span>
+        try {
+<span class="nc bnc" id="L46" title="All 2 branches missed.">            if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)</span>
+<span class="nc" id="L47">            return action()</span>
+        } finally {
+<span class="nc" id="L49">            ProxySelector.default = theDefault</span>
+        }
     }
 
     
     public &lt;T&gt; T getService(Class&lt;T&gt; serviceClazz) {
-<span class="pc" id="L49">        serviceRegistry[serviceClazz.name]</span>
+<span class="pc" id="L55">        serviceRegistry[serviceClazz.name]</span>
     }
 
     
     def getService(String serviceClazz) {
-<span class="nc" id="L54">        serviceRegistry['com.baloise.automagic.'+serviceClazz]</span>
+<span class="nc" id="L60">        serviceRegistry['com.baloise.automagic.'+serviceClazz]</span>
     }
 
     def getJenkins(){
-<span class="nc" id="L58">        Jenkins.instanceOrNull</span>
+<span class="nc" id="L64">        Jenkins.instanceOrNull</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
