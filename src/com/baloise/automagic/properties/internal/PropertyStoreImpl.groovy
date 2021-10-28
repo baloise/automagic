@@ -12,12 +12,15 @@ class PropertyStoreImpl extends Registered implements PropertyStoreService {
 
     String brachName = 'automagic'
     Map<String, String> lazyProperties
-    File workdir = new File("../automagic/branches/"+brachName)
-    File yamlFile = new File(workdir, 'PropertyStoreService.yaml')
-
     
+	
+	File workdir
+    File yamlFile	
+	    
     private Map<String, String> getProps() {
         if(lazyProperties == null) {
+			workdir = new File(steps.env.WORKSPACE+"-branches/"+brachName)
+			yamlFile = new File(workdir, 'PropertyStoreService.yaml')
             GitService git = registry.getService(GitService)
             git.checkout(git.url, brachName, workdir)
             lazyProperties = yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]
