@@ -3,7 +3,6 @@ package com.baloise.automagic.properties.internal
 import com.baloise.automagic.common.Registered
 import com.baloise.automagic.git.GitService
 import com.baloise.automagic.properties.PropertyStoreService
-import com.cloudbees.groovy.cps.NonCPS
 import org.yaml.snakeyaml.Yaml
 
 import static java.util.Collections.singletonMap
@@ -23,7 +22,7 @@ class PropertyStoreImpl extends Registered implements PropertyStoreService {
 			yamlFile = new File(workdir, 'PropertyStoreService.yaml')
             GitService git = registry.getService(GitService)
             git.checkout(git.url, brachName, workdir)
-            lazyProperties = yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]
+            lazyProperties = (yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]) as Map<String, String>
         }
         lazyProperties
     }
@@ -40,16 +39,24 @@ class PropertyStoreImpl extends Registered implements PropertyStoreService {
         put(singletonMap(key,value))
     }
 
-    
+    @Override
+    PropertyStoreService delete(String key) {
+        props.remove(key) ? storeProps("PropertyStore deleted ${key}") : this
+    }
+
     @Override
     PropertyStoreService put(Map<String,String> key2value) {
         if(key2value.every {props[it.key] == it.value}) {
             return this
         }
         props.putAll(key2value)
+        return storeProps("PropertyStore updated ${key2value.keySet()}")
+    }
+
+    private PropertyStoreImpl storeProps(String message) {
         yamlFile.text = new Yaml().dumpAsMap(props)
         GitService git = registry.getService(GitService)
-        git.commitAllAndPush(workdir, "PropertyStore updated ${key2value.keySet()}")
+        git.commitAllAndPush(workdir, message)
         return this
     }
 }

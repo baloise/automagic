@@ -5,4 +5,5 @@ package com.baloise.automagic.properties
 interface PropertyStoreService  extends PropertyService{
     PropertyStoreService put(String key, String value)
     PropertyStoreService put(Map<String,String> key2value)
+    PropertyStoreService delete(String key)
 }
