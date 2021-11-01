@@ -3,7 +3,6 @@
 import com.baloise.automagic.common.Registered
 import com.baloise.automagic.git.GitService
 import com.baloise.automagic.properties.PropertyStoreService
-import com.cloudbees.groovy.cps.NonCPS
 import org.yaml.snakeyaml.Yaml
 
 import static java.util.Collections.singletonMap
@@ -18,39 +17,47 @@ class PropertyStoreImpl extends Registered implements PropertyStoreService {
     File yamlFile	
 	    
     private Map&lt;String, String&gt; getProps() {
-<span class="nc bnc" id="L21" title="All 2 branches missed.">        if(lazyProperties == null) {</span>
-<span class="nc" id="L22">			workdir = new File(System.getProperty(&quot;java.io.tmpdir&quot;),steps.env.JOB_NAME+ &quot;/branches/&quot;+brachName)</span>
-<span class="nc" id="L23">			yamlFile = new File(workdir, 'PropertyStoreService.yaml')</span>
-<span class="nc" id="L24">            GitService git = registry.getService(GitService)</span>
-<span class="nc" id="L25">            git.checkout(git.url, brachName, workdir)</span>
-<span class="nc bnc" id="L26" title="All 2 branches missed.">            lazyProperties = yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]</span>
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        if(lazyProperties == null) {</span>
+<span class="nc" id="L21">			workdir = new File(System.getProperty(&quot;java.io.tmpdir&quot;),steps.env.JOB_NAME+ &quot;/branches/&quot;+brachName)</span>
+<span class="nc" id="L22">			yamlFile = new File(workdir, 'PropertyStoreService.yaml')</span>
+<span class="nc" id="L23">            GitService git = registry.getService(GitService)</span>
+<span class="nc" id="L24">            git.checkout(git.url, brachName, workdir)</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">            lazyProperties = (yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]) as Map&lt;String, String&gt;</span>
         }
-<span class="nc" id="L28">        lazyProperties</span>
+<span class="nc" id="L27">        lazyProperties</span>
     }
 
     
     @Override
     String get(String key) {
-<span class="nc" id="L34">       props[key]</span>
+<span class="nc" id="L33">       props[key]</span>
     }
 
     
     @Override
     PropertyStoreService put(String key, String value) {
-<span class="nc" id="L40">        put(singletonMap(key,value))</span>
+<span class="nc" id="L39">        put(singletonMap(key,value))</span>
     }
 
-    
+    @Override
+    PropertyStoreService delete(String key) {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        props.remove(key) ? storeProps(&quot;PropertyStore deleted ${key}&quot;) : this</span>
+    }
+
     @Override
     PropertyStoreService put(Map&lt;String,String&gt; key2value) {
-<span class="nc bnc" id="L46" title="All 2 branches missed.">        if(key2value.every {props[it.key] == it.value}) {</span>
-<span class="nc" id="L47">            return this</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if(key2value.every {props[it.key] == it.value}) {</span>
+<span class="nc" id="L50">            return this</span>
         }
-<span class="nc" id="L49">        props.putAll(key2value)</span>
-<span class="nc" id="L50">        yamlFile.text = new Yaml().dumpAsMap(props)</span>
-<span class="nc" id="L51">        GitService git = registry.getService(GitService)</span>
-<span class="nc" id="L52">        git.commitAllAndPush(workdir, &quot;PropertyStore updated ${key2value.keySet()}&quot;)</span>
-<span class="nc" id="L53">        return this</span>
+<span class="nc" id="L52">        props.putAll(key2value)</span>
+<span class="nc" id="L53">        return storeProps(&quot;PropertyStore updated ${key2value.keySet()}&quot;)</span>
+    }
+
+    private PropertyStoreImpl storeProps(String message) {
+<span class="nc" id="L57">        yamlFile.text = new Yaml().dumpAsMap(props)</span>
+<span class="nc" id="L58">        GitService git = registry.getService(GitService)</span>
+<span class="nc" id="L59">        git.commitAllAndPush(workdir, message)</span>
+<span class="nc" id="L60">        return this</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

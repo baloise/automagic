@@ -5,7 +5,7 @@ automagic,com.baloise.automagic.common,Registry,193,213,6,0,10,7,9,3,6,3
 automagic,com.baloise.automagic.common,Registered,26,25,1,1,0,0,4,3,3,3
 automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl._put_closure1,41,0,0,0,1,0,3,0,3,0
 automagic,com.baloise.automagic.properties.internal,PropertyImpl,41,5,0,0,1,0,1,1,1,1
-automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl,310,13,6,0,16,0,15,1,12,1
+automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl,370,13,8,0,18,0,18,1,14,1
 automagic,com.baloise.automagic.git.internal,GitImpl._checkout_closure1,41,522,0,4,0,26,3,5,3,3
 automagic,com.baloise.automagic.git.internal,GitImpl._commitAllAndPush_closure2,25,148,0,0,0,5,2,3,2,3
 automagic,com.baloise.automagic.git.internal,GitImpl,76,254,5,5,1,8,5,7,0,7
