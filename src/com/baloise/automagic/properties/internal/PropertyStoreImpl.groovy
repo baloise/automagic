@@ -9,19 +9,24 @@ import static java.util.Collections.singletonMap
 
 class PropertyStoreImpl extends Registered implements PropertyStoreService {
 
-    String brachName = 'automagic'
+    String branchName = 'automagic'
     Map<String, String> lazyProperties
     
 	
 	File workdir
     File yamlFile	
-	    
+
+    static String toFileName(String input){
+        if(input == null) return 'null'
+        input.replaceAll(/\W+/,'-' ).replaceAll(/^-|-$/,'' )
+    }
+
     private Map<String, String> getProps() {
         if(lazyProperties == null) {
-			workdir = new File(System.getProperty("java.io.tmpdir"),steps.env.JOB_NAME+ "/branches/"+brachName)
-			yamlFile = new File(workdir, 'PropertyStoreService.yaml')
             GitService git = registry.getService(GitService)
-            git.checkout(git.url, brachName, workdir)
+			workdir = new File(System.getProperty("java.io.tmpdir"),"/"+toFileName(git.url)+"/branches/"+branchName)
+			yamlFile = new File(workdir, 'PropertyStoreService.yaml')
+            git.checkout(git.url, branchName, workdir)
             lazyProperties = (yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]) as Map<String, String>
         }
         lazyProperties
