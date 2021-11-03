@@ -9,55 +9,60 @@ import static java.util.Collections.singletonMap
 
 class PropertyStoreImpl extends Registered implements PropertyStoreService {
 
-    String brachName = 'automagic'
+    String branchName = 'automagic'
     Map&lt;String, String&gt; lazyProperties
     
 	
 	File workdir
     File yamlFile	
-	    
+
+    static String toFileName(String input){
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        if(input == null) return 'null'</span>
+<span class="pc" id="L21">        input.replaceAll(/\W+/,'-' ).replaceAll(/^-|-$/,'' )</span>
+    }
+
     private Map&lt;String, String&gt; getProps() {
-<span class="nc bnc" id="L20" title="All 2 branches missed.">        if(lazyProperties == null) {</span>
-<span class="nc" id="L21">			workdir = new File(System.getProperty(&quot;java.io.tmpdir&quot;),steps.env.JOB_NAME+ &quot;/branches/&quot;+brachName)</span>
-<span class="nc" id="L22">			yamlFile = new File(workdir, 'PropertyStoreService.yaml')</span>
-<span class="nc" id="L23">            GitService git = registry.getService(GitService)</span>
-<span class="nc" id="L24">            git.checkout(git.url, brachName, workdir)</span>
-<span class="nc bnc" id="L25" title="All 2 branches missed.">            lazyProperties = (yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]) as Map&lt;String, String&gt;</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        if(lazyProperties == null) {</span>
+<span class="nc" id="L26">            GitService git = registry.getService(GitService)</span>
+<span class="nc" id="L27">			workdir = new File(System.getProperty(&quot;java.io.tmpdir&quot;),&quot;/&quot;+toFileName(git.url)+&quot;/branches/&quot;+branchName)</span>
+<span class="nc" id="L28">			yamlFile = new File(workdir, 'PropertyStoreService.yaml')</span>
+<span class="nc" id="L29">            git.checkout(git.url, branchName, workdir)</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">            lazyProperties = (yamlFile.exists() ? new Yaml().load(yamlFile.text) : [:]) as Map&lt;String, String&gt;</span>
         }
-<span class="nc" id="L27">        lazyProperties</span>
+<span class="nc" id="L32">        lazyProperties</span>
     }
 
     
     @Override
     String get(String key) {
-<span class="nc" id="L33">       props[key]</span>
+<span class="nc" id="L38">       props[key]</span>
     }
 
     
     @Override
     PropertyStoreService put(String key, String value) {
-<span class="nc" id="L39">        put(singletonMap(key,value))</span>
+<span class="nc" id="L44">        put(singletonMap(key,value))</span>
     }
 
     @Override
     PropertyStoreService delete(String key) {
-<span class="nc bnc" id="L44" title="All 2 branches missed.">        props.remove(key) ? storeProps(&quot;PropertyStore deleted ${key}&quot;) : this</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        props.remove(key) ? storeProps(&quot;PropertyStore deleted ${key}&quot;) : this</span>
     }
 
     @Override
     PropertyStoreService put(Map&lt;String,String&gt; key2value) {
-<span class="nc bnc" id="L49" title="All 2 branches missed.">        if(key2value.every {props[it.key] == it.value}) {</span>
-<span class="nc" id="L50">            return this</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if(key2value.every {props[it.key] == it.value}) {</span>
+<span class="nc" id="L55">            return this</span>
         }
-<span class="nc" id="L52">        props.putAll(key2value)</span>
-<span class="nc" id="L53">        return storeProps(&quot;PropertyStore updated ${key2value.keySet()}&quot;)</span>
+<span class="nc" id="L57">        props.putAll(key2value)</span>
+<span class="nc" id="L58">        return storeProps(&quot;PropertyStore updated ${key2value.keySet()}&quot;)</span>
     }
 
     private PropertyStoreImpl storeProps(String message) {
-<span class="nc" id="L57">        yamlFile.text = new Yaml().dumpAsMap(props)</span>
-<span class="nc" id="L58">        GitService git = registry.getService(GitService)</span>
-<span class="nc" id="L59">        git.commitAllAndPush(workdir, message)</span>
-<span class="nc" id="L60">        return this</span>
+<span class="nc" id="L62">        yamlFile.text = new Yaml().dumpAsMap(props)</span>
+<span class="nc" id="L63">        GitService git = registry.getService(GitService)</span>
+<span class="nc" id="L64">        git.commitAllAndPush(workdir, message)</span>
+<span class="nc" id="L65">        return this</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
