@@ -8,8 +8,8 @@ import hudson.plugins.git.GitSCM
 import org.yaml.snakeyaml.Yaml
 
 class MockRegistry extends Registry {
-    private MockRegistry() {
-        super(steps())
+    private MockRegistry(Map steps) {
+        super(steps)
     }
 
     def lazyJenkins
@@ -20,8 +20,9 @@ class MockRegistry extends Registry {
     }
 
     static Registry get(){
-        MockRegistry registry = new MockRegistry()
-        registry.registerService(CredentialsService, new MockCredentialService(credentials : config.credentials))
+        Map steps = steps()
+        MockRegistry registry = new MockRegistry(steps)
+        registry.registerService(CredentialsService, new MockCredentialService(credentials : config.credentials, steps : steps))
         registry.registerService(PropertyService, new MockPropertyService(properties : config.properties))
         registry
     }
@@ -54,7 +55,7 @@ class MockRegistry extends Registry {
         ret
     }
 
-    private static def steps() {
+    private static Map steps() {
         def steps = [:]
         steps.echo = { text -> println "echo: " + text }
         steps.sh = { cmd -> println "executed shell cmd: " + cmd }
