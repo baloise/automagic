@@ -26,6 +26,7 @@ public class CredentialsServiceTest {
 
     @Test
     void getGIT() {
+        //TODO must access properties through steps
         service.withCredentials("secrets/GIT", ["nope"]){
             assertEquals('sesam', PASSWORD)
             assertEquals('automagic', USERNAME )
