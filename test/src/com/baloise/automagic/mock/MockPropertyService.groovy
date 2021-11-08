@@ -10,7 +10,7 @@ class MockPropertyService implements PropertyService {
 
     @Override
     String get(String key) {
-        return properties['AUTOMAGIC_'+key]
+        return properties[key]
     }
 
 }

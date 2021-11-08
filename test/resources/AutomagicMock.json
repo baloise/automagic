@@ -1,0 +1,18 @@
+{
+	"credentials" : { 
+		"GIT" : {
+		"USERNAME" : "automagic",
+		"PASSWORD" : "sesam"
+		},
+		"VALUEMATION" : {
+			"USERNAME" : "automagic",
+			"PASSWORD" : "friend",
+			"ACCESS_TOKEN" : "sesam"
+		}
+	},
+	"properties" : { 
+		"GIT_AUTHOR_NAME" : "automagic",
+		"GIT_AUTHOR_EMAIL" : "automagic@github.com",
+		"VALUEMATION_URL" : "http://localhost:8077/vmweb"
+	}
+}

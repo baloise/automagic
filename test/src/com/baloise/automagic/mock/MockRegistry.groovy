@@ -1,16 +1,16 @@
 package com.baloise.automagic.mock
 
+
 import com.baloise.automagic.common.Registry
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.properties.PropertyService
+
+import groovy.json.JsonSlurper
 import hudson.TestProxyConfiguration
 import hudson.plugins.git.GitSCM
-import org.yaml.snakeyaml.Yaml
 
 class MockRegistry extends Registry {
-    private MockRegistry(Map steps) {
-        super(steps)
-    }
+  
 
     def lazyJenkins
     @Override
@@ -21,39 +21,12 @@ class MockRegistry extends Registry {
 
     static Registry get(){
         Map steps = steps()
-        MockRegistry registry = new MockRegistry(steps)
-        registry.registerService(CredentialsService, new MockCredentialService(credentials : config.credentials, steps : steps))
-        registry.registerService(PropertyService, new MockPropertyService(properties : config.properties))
+        MockRegistry registry = new MockRegistry().construct(steps)
+        registry.registerService(CredentialsService, new MockCredentialService(credentials : MockConfiguration.config.credentials, steps : steps))
+        registry.registerService(PropertyService, new MockPropertyService(properties : MockConfiguration.config.properties))
         registry
     }
-
-    static Map lazyConfig
-    static getConfig() {
-        if (!lazyConfig) lazyConfig = loadConfig()
-        lazyConfig
-    }
-
-    static Map loadConfig() {
-        def yaml = new Yaml()
-        String mockConfigurationFilename = 'AutomagicMock.yaml'
-        File mockConfigurationFile = new File("test/resources/$mockConfigurationFilename")
-        Map ret = [:]
-        if(mockConfigurationFile.exists()) {
-            println "loading $mockConfigurationFile.absolutePath"
-            ret = yaml.load(mockConfigurationFile.text)
-        }
-        mockConfigurationFile = new File(System.getProperty('user.home'), mockConfigurationFilename)
-        if(mockConfigurationFile.exists()) {
-            def personal = yaml.load(mockConfigurationFile.text)
-            if(personal.enabled == null || personal.enabled){
-                println "loading $mockConfigurationFile.absolutePath"
-                ret = deepMergeMaps(ret, personal)
-            } else {
-                println "$mockConfigurationFile.absolutePath disabled"
-            }
-        }
-        ret
-    }
+	
 
     private static Map steps() {
         def steps = [:]
@@ -109,23 +82,7 @@ class MockRegistry extends Registry {
 
 
     static TestProxyConfiguration createProxy() {
-        // keep in sync with JENKINS-HOME-TEMPLATE/init.groovy.d/01_proxy.groovy
-        String proxyConf = System.getProperty("https_proxy") ?: System.getProperty("http_proxy") ?: System.getenv("https_proxy") ?: System.getenv("https_proxy")
-        if(proxyConf) {
-            String noProxy = System.getProperty("no_proxy") ?: System.getenv("no_proxy")
-            URL url = new URL(proxyConf)
-            def (usr, pwd ) = (url.userInfo?:":").split(":",2)
-            return new TestProxyConfiguration(url.host, url.port, usr, pwd, noProxy, "https://example.com")
-        }
-        null
+		MockConfiguration.createProxy(hudson.TestProxyConfiguration)
     }
-
-    static def Map deepMergeMaps(Map lhs, Map rhs) {
-        rhs.each { k, v ->
-            lhs[k] = (lhs[k] in Map ? deepMergeMaps(lhs[k], v) : v)
-        }
-        return lhs
-    }
-
 
 }
