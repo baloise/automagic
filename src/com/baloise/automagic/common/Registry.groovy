@@ -1,7 +1,8 @@
 package com.baloise.automagic.common
 
 import com.baloise.automagic.credentials.CredentialsService
-import com.baloise.automagic.credentials.internal.CredentialsImpl
+import com.baloise.automagic.credentials.internal.JenkinsCredentials
+import com.baloise.automagic.credentials.internal.VaultCredentials
 import com.baloise.automagic.common.internal.JenkinsProxySelector
 import com.baloise.automagic.demo.GreetingService
 import com.baloise.automagic.demo.internal.GreetingImpl
@@ -14,23 +15,14 @@ import com.baloise.automagic.properties.internal.PropertyStoreImpl
 import com.cloudbees.groovy.cps.NonCPS
 import jenkins.model.Jenkins
 
-class Registry implements Serializable {
+class Registry implements Serializable, Constructed<Registry, Object> {
 
     Map<String, Registered> serviceRegistry = [:]
-
-    protected Registry(steps) {
-		registerService(GreetingService, new GreetingImpl(registry: this, steps: steps))
-        registerService(GitService, new GitImpl(registry: this, steps: steps))
-        registerService(CredentialsService, new CredentialsImpl(registry: this, steps: steps))
-        registerService(PropertyService, new PropertyImpl(registry: this, steps: steps))
-        registerService(PropertyStoreService, new PropertyStoreImpl(registry: this, steps: steps))
-    }
-
     
     static Registry get(steps){
         Binding binding = steps.binding
         if(!binding.hasVariable(Registry.class.name))
-            binding.setVariable(Registry.class.name, new Registry(steps))
+            binding.setVariable(Registry.class.name, new Registry().construct(steps))
         binding.getVariable(Registry.class.name)
     }
 
@@ -63,4 +55,15 @@ class Registry implements Serializable {
     def getJenkins(){
         Jenkins.instanceOrNull
     }
+
+
+	@Override
+	Registry construct(Object steps) {
+		registerService(GreetingService, new GreetingImpl(registry: this, steps: steps).construct())
+		registerService(GitService, new GitImpl(registry: this, steps: steps).construct())
+		registerService(CredentialsService, new JenkinsCredentials(registry: this, steps: steps).construct())
+		registerService(PropertyService, new PropertyImpl(registry: this, steps: steps).construct())
+		registerService(PropertyStoreService, new PropertyStoreImpl(registry: this, steps: steps).construct())
+		return this
+	}
 }
