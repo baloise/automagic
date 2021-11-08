@@ -14,13 +14,16 @@ if(Jenkins.instance.getItem(jobName)) {
 //library 'automagic-git@release'
 
 // use library source from disk 
-library 'automagic@release'
-
-println(am_greet("el mundo"))
-
 def autolib = library('automagic@release').com.baloise.automagic
+
+// Directly call the class/method.
 def registry = autolib.common.Registry.get(this)
 println registry.getService('demo.GreetingService').greet("that was complicated")
+
+// ..or use the wrapped var of the greeting service
+println(am_greet("el mundo"))
+
+// Don't try it the other way around at the moment since the singleton get of registry instance will fail
 
 // use this job as playground / notice board in addition to the replay function
 
