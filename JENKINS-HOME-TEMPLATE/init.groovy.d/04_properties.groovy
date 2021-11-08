@@ -3,7 +3,12 @@ import jenkins.model.*
 
 Logger log = Logger.getLogger('init.groovy.d')
 
-Jenkins.instance.globalNodeProperties.getAll(hudson.slaves.EnvironmentVariablesNodeProperty.class)[0].envVars.putAll([
+def envVars = Jenkins.instance.globalNodeProperties.getAll(hudson.slaves.EnvironmentVariablesNodeProperty.class)[0]?.envVars
+
+if (!envVars) {
+    return
+}
+envVars.putAll([
         'AUTOMAGIC_GIT_AUTHOR_EMAIL' : 'git@baloise.com',
         'AUTOMAGIC_GIT_AUTHOR_NAME' : 'Hans'
 ])
