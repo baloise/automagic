@@ -8,10 +8,12 @@ def envVars = Jenkins.instance.globalNodeProperties.getAll(hudson.slaves.Environ
 if (!envVars) {
     return
 }
-envVars.putAll([
-        'AUTOMAGIC_GIT_AUTHOR_EMAIL' : 'git@baloise.com',
-        'AUTOMAGIC_GIT_AUTHOR_NAME' : 'Hans'
-])
+
+def mockConfiguration = new GroovyScriptEngine(['src', 'test/src'] as String[],this.class.getClassLoader()).with {
+	loadScriptByName( 'com/baloise/automagic/mock/MockConfiguration.groovy' )
+}
+
+envVars.putAll(mockConfiguration.config.properties.collectEntries{ k,v-> [("AM_$k".toString()) : v]})
 Jenkins.instance.save()
 
 log.info "properties updated"
