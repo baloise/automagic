@@ -26,7 +26,7 @@ public class CredentialsServiceTest {
 
     @Test
     void getGIT() {
-        service.withCredentials("secrets/GIT", ["nope"]){
+        service.withCredentials("GIT", ["PASSWORD", 'USERNAME']){
             assertEquals('sesam', PASSWORD)
             assertEquals('automagic', USERNAME )
         }
