@@ -1,7 +1,9 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+automagic,com.baloise.automagic.cmdb.internal,ValuemationCMDB._buildJSON_closure1,145,0,0,0,1,0,5,0,5,0
+automagic,com.baloise.automagic.cmdb.internal,ValuemationCMDB,788,5,20,0,13,0,18,1,8,1
 automagic,com.baloise.automagic.common.internal,JenkinsProxySelector,66,0,0,0,3,0,4,0,4,0
 automagic,com.baloise.automagic.common,Automagic,14,7,0,0,0,0,1,1,1,1
-automagic,com.baloise.automagic.common,Registry,193,213,6,0,10,7,9,3,6,3
+automagic,com.baloise.automagic.common,Registry,193,244,6,0,10,8,9,3,6,3
 automagic,com.baloise.automagic.common,Registered,26,25,1,1,0,0,4,3,3,3
 automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl._put_closure1,41,0,0,0,1,0,3,0,3,0
 automagic,com.baloise.automagic.properties.internal,PropertyImpl,41,5,0,0,1,0,1,1,1,1
