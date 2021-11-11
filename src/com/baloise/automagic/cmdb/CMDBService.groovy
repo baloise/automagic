@@ -4,6 +4,7 @@ interface CMDBService {
 	/*
  	 * @param dueDate "YYYY-MM-dd"
  	 * @param status 'To Do','In Progress','Approval','Closed'
+ 	 * @return Change number
  	*/
 	String createChange(String title,
 						String description,

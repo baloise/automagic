@@ -5,6 +5,7 @@ import com.baloise.automagic.common.Registered
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.properties.PropertyService
 import groovy.json.JsonBuilder
+import jenkins.plugins.http_request.ResponseContentSupplier
 
 class ValuemationCMDB extends Registered implements CMDBService {
 
@@ -28,7 +29,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
                         String actualUser,
                         String status = 'To Do',
                         String parentCategory = "Standard Change") {
-        createOrUpdateTicket(null, title,
+        ResponseContentSupplier response = createOrUpdateTicket(null, title,
                 description,
                 reporterUserId,
                 approverUserId,
@@ -45,7 +46,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 status,
                 parentCategory)
 
-
+        steps.readJson(response.content).result.data.ticketno
     }
 
 
@@ -73,7 +74,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
     ][status]
     }
 
-    def createOrUpdateTicket(
+    ResponseContentSupplier createOrUpdateTicket(
             String ticketNo,
             String title,
             String description,
