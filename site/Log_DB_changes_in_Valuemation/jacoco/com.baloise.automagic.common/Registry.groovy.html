@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Registry.groovy</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">automagic</a> &gt; <a href="index.source.html" class="el_package">com.baloise.automagic.common</a> &gt; <span class="el_source">Registry.groovy</span></div><h1>Registry.groovy</h1><pre class="source lang-java linenums">package com.baloise.automagic.common
+
+import com.baloise.automagic.cmdb.CMDBService
+import com.baloise.automagic.cmdb.internal.ValuemationCMDB
+import com.baloise.automagic.credentials.CredentialsService
+import com.baloise.automagic.credentials.internal.CredentialsImpl
+import com.baloise.automagic.common.internal.JenkinsProxySelector
+import com.baloise.automagic.demo.GreetingService
+import com.baloise.automagic.demo.internal.GreetingImpl
+import com.baloise.automagic.git.GitService
+import com.baloise.automagic.git.internal.GitImpl
+import com.baloise.automagic.properties.PropertyService
+import com.baloise.automagic.properties.PropertyStoreService
+import com.baloise.automagic.properties.internal.PropertyImpl
+import com.baloise.automagic.properties.internal.PropertyStoreImpl
+import com.cloudbees.groovy.cps.NonCPS
+import jenkins.model.Jenkins
+
+class Registry implements Serializable {
+
+    Map&lt;String, Registered&gt; serviceRegistry = [:]
+
+    protected Registry(steps) {
+<span class="fc" id="L24">		registerService(GreetingService, new GreetingImpl(registry: this, steps: steps))</span>
+<span class="fc" id="L25">        registerService(GitService, new GitImpl(registry: this, steps: steps))</span>
+<span class="fc" id="L26">        registerService(CredentialsService, new CredentialsImpl(registry: this, steps: steps))</span>
+<span class="fc" id="L27">        registerService(PropertyService, new PropertyImpl(registry: this, steps: steps))</span>
+<span class="fc" id="L28">        registerService(PropertyStoreService, new PropertyStoreImpl(registry: this, steps: steps))</span>
+<span class="fc" id="L29">        registerService(CMDBService, new ValuemationCMDB(registry: this, steps: steps))</span>
+    }
+
+    
+    static Registry get(steps){
+<span class="nc" id="L34">        Binding binding = steps.binding</span>
+<span class="nc bnc" id="L35" title="All 4 branches missed.">        if(!binding.hasVariable(Registry.class.name))</span>
+<span class="nc" id="L36">            binding.setVariable(Registry.class.name, new Registry(steps))</span>
+<span class="nc" id="L37">        binding.getVariable(Registry.class.name)</span>
+    }
+
+	@NonCPS
+    protected &lt;T&gt; void registerService(Class&lt;T&gt; serviceClazz, T impl) {
+<span class="fc" id="L42">        serviceRegistry[serviceClazz.name] =  impl</span>
+    }
+
+    @NonCPS
+    &lt;T&gt; T withProxySelector(Closure&lt;T&gt; action) {
+<span class="nc" id="L47">        ProxySelector theDefault = ProxySelector.default</span>
+        try {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            if (jenkins.proxy) ProxySelector.default = new JenkinsProxySelector(jenkins.proxy)</span>
+<span class="nc" id="L50">            return action()</span>
+        } finally {
+<span class="nc" id="L52">            ProxySelector.default = theDefault</span>
+        }
+    }
+
+    
+    public &lt;T&gt; T getService(Class&lt;T&gt; serviceClazz) {
+<span class="pc" id="L58">        serviceRegistry[serviceClazz.name]</span>
+    }
+
+    
+    def getService(String serviceClazz) {
+<span class="nc" id="L63">        serviceRegistry['com.baloise.automagic.'+serviceClazz]</span>
+    }
+
+    def getJenkins(){
+<span class="nc" id="L67">        Jenkins.instanceOrNull</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
