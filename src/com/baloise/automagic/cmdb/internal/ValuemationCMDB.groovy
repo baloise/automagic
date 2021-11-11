@@ -12,20 +12,52 @@ class ValuemationCMDB extends Registered implements CMDBService {
     String getValuemationURL(){ registry.getService(PropertyService).get('VALUEMATION_URL') }
 
     @Override
-    String createChange() {
-        buildJSON('hallo', [a:123])
+    String createChange(String title,
+                        String description,
+                        String reporterUserId,
+                        String approverUserId,
+                        String assigneeUserId,
+                        String service,
+                        String system,
+                        String sbu,
+                        String dueDate,//"YYYY-MM-dd"
+                        String environment,
+                        String ppmsProject,
+                        String issueId,
+                        String category,
+                        String actualUser,
+                        String status = 'To Do',
+                        String parentCategory = "Standard Change") {
+        createOrUpdateTicket(null, title,
+                description,
+                reporterUserId,
+                approverUserId,
+                assigneeUserId,
+                service,
+                system,
+                sbu,
+                dueDate,
+                environment,
+                ppmsProject,
+                issueId,
+                category,
+                actualUser,
+                status,
+                parentCategory)
+
+
     }
 
 
     String buildJSON(String workflowName, Map params) {
-        registry.getService(CredentialsService).withCredentials('secrets/VALUEMATION',
-                ['USERNAME', 'PASSWORD','ACCESS_TOKEN']
+        registry.getService(CredentialsService).withCredentials('VALUEMATION',
+              ['USERNAME', 'PASSWORD','ACCESS_TOKEN']
         ) {
             new JsonBuilder(
-                ["username" : steps.USERNAME,
-                "password" :  steps.PASSWORD,
+                ["username" : steps.VALUEMATION_USERNAME,
+                "password" : steps.VALUEMATION_PASSWORD,
                 "service" : workflowName ,
-                "accessToken" : steps.ACCESS_TOKEN,
+                "accessToken" : steps.VALUEMATION_ACCESS_TOKEN,
                 "encrypted" : "Y",
                  "params" : params
                 ]
@@ -51,21 +83,20 @@ class ValuemationCMDB extends Registered implements CMDBService {
             String service,
             String system,
             String sbu,
-            String dueDate,//"YYYY-MM-dd"
+            String dueDate,
             String environment,
             String ppmsProject,
             String issueId,
             String category,
             String actualUser,
-            String status = CH_REC,
-            // konstant
+            String status,
             String parentCategory = "Standard Change"
     ) {
 
         Map params = [
                 "ticketclass": "RFC/Change",
                 "tickettype": "Standard Change",
-                "status": status,
+                "status": mapStatus(status),
                 "tckShorttext": title,
                 "description": description,
                 "statementtype": "Information",
@@ -87,9 +118,15 @@ class ValuemationCMDB extends Registered implements CMDBService {
         if(ticketNo) {
             params.ticketno = ticketNo
         }
-        return httpPost(valuemationWorkflow,buildJSON(
-                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',
-                params
-        ))
+
+        return steps.httpRequest(
+                acceptType: 'APPLICATION_JSON',
+                contentType: 'APPLICATION_JSON',
+                httpMode: 'POST',
+                requestBody: buildJSON(
+                                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',
+                                params),
+                url: "$valuemationURL/services/workflowExecutionRESTService/runsubworkflowservice/runsubworkflow"
+        )
     }
 }
