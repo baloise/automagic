@@ -1,5 +1,7 @@
 package com.baloise.automagic.common
 
+import com.baloise.automagic.cmdb.CMDBService
+import com.baloise.automagic.cmdb.internal.ValuemationCMDB
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.credentials.internal.CredentialsImpl
 import com.baloise.automagic.common.internal.JenkinsProxySelector
@@ -24,6 +26,7 @@ class Registry implements Serializable {
         registerService(CredentialsService, new CredentialsImpl(registry: this, steps: steps))
         registerService(PropertyService, new PropertyImpl(registry: this, steps: steps))
         registerService(PropertyStoreService, new PropertyStoreImpl(registry: this, steps: steps))
+        registerService(CMDBService, new ValuemationCMDB(registry: this, steps: steps))
     }
 
     
