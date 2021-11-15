@@ -13,6 +13,7 @@ import com.baloise.automagic.properties.PropertyStoreService
 import com.baloise.automagic.properties.internal.PropertyImpl
 import com.baloise.automagic.properties.internal.PropertyStoreImpl
 import com.cloudbees.groovy.cps.NonCPS
+import com.datapipe.jenkins.vault.configuration.GlobalVaultConfiguration
 import jenkins.model.Jenkins
 
 class Registry implements Serializable, Constructed<Registry, Object> {
@@ -61,7 +62,17 @@ class Registry implements Serializable, Constructed<Registry, Object> {
 	Registry construct(Object steps) {
 		registerService(GreetingService, new GreetingImpl(registry: this, steps: steps).construct())
 		registerService(GitService, new GitImpl(registry: this, steps: steps).construct())
-		registerService(CredentialsService, new JenkinsCredentials(registry: this, steps: steps).construct())
+        try {
+            if(GlobalVaultConfiguration.get().configuration.vaultCredentialId) {
+                println "using vault credentials with id ${GlobalVaultConfiguration.get().configuration.vaultCredentialId}"
+                registerService(CredentialsService, new VaultCredentials(registry: this, steps: steps).construct())
+            } else {
+                throw new Exception("no vault credential id set")
+            }
+        } catch(e) {
+            println "using jenkins credentials"
+            registerService(CredentialsService, new JenkinsCredentials(registry: this, steps: steps).construct())
+        }
 		registerService(PropertyService, new PropertyImpl(registry: this, steps: steps).construct())
 		registerService(PropertyStoreService, new PropertyStoreImpl(registry: this, steps: steps).construct())
 		return this

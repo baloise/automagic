@@ -8,7 +8,7 @@ import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials
 import com.cloudbees.plugins.credentials.domains.Domain
 
 /**
- * Credentials are stored under secrets
+ * Credentials are stored under secret
  */
 class VaultCredentials extends Registered implements CredentialsService {
 
@@ -18,7 +18,7 @@ class VaultCredentials extends Registered implements CredentialsService {
     <T> T withCredentials(String scope, List<String> keys, Closure<T> action){
         steps.withVault(vaultSecrets: [
                 [
-                        path: "secrets/$scope",
+                        path: "secret/$scope",
                         secretValues: keys.collect{[envVar: it.toUpperCase(), vaultKey: it]}
                 ]
         ], action)
