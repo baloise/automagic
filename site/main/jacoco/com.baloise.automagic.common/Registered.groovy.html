@@ -4,8 +4,13 @@
 // yes, I know ... composition over inheritance, 
 // but traits don't work in Jenkins (https://issues.jenkins.io/browse/JENKINS-46145) 
 // and Mixins are deprecated (http://docs.groovy-lang.org/latest/html/api/groovy/lang/Mixin.html)
-abstract class Registered implements Serializable {
+abstract class Registered implements Serializable, Constructed&lt;Registered, Object&gt; {
 	protected Registry registry
 	protected def steps
+	
+	@Override
+	public Registered construct(Object params = null) {
+<span class="pc" id="L13">		return this;</span>
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
