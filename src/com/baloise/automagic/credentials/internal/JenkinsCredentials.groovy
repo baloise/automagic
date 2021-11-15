@@ -7,17 +7,17 @@ import com.cloudbees.plugins.credentials.SystemCredentialsProvider
 import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials
 import com.cloudbees.plugins.credentials.domains.Domain
 
-class CredentialsImpl extends Registered implements CredentialsService {
 
+/**
+ * credentials are stored with prefix AM_
+ */
+class JenkinsCredentials extends Registered implements CredentialsService {
 
-    
     @Override
-    <T> T withCredentials(String credentialId, List<String> keys, Closure<T> action){
-        steps.withVault(vaultSecrets: [
-                [
-                        path: credentialId,
-                        secretValues: keys.collect{[envVar: it.toUpperCase(), vaultKey: it]}
-                ]
-        ], action)
+    <T> T withCredentials(String scope, List<String> keys, Closure<T> action){
+		steps.withCredentials(
+				keys.collect{steps.string(credentialsId: "AM_${scope}_${it}", variable: it.toUpperCase())},
+				action
+			)
     }
 }

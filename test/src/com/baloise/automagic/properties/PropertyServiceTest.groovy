@@ -20,7 +20,7 @@ public class PropertyServiceTest {
         assertEquals(null, ps.get("inexistant"))
     }
     @Test
-    void getAUTOMAGIC_GIT_AUTHOR_NAME() {
+    void getAM_GIT_AUTHOR_NAME() {
         assertEquals('automagic', ps.get("GIT_AUTHOR_NAME"))
     }
 }
