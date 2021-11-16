@@ -27,7 +27,7 @@ try {
 
 VaultConfiguration vconf = GlobalVaultConfiguration.get().configuration
 String vaultHost = "127.0.0.1:8280"
-if(vconf.vaultUrl.contains(vaultHost)) {
+if(!vconf.vaultUrl.contains(vaultHost)) {
 	log.warning "Current vault config points to ${vconf.vaultUrl} and not as expected to ${vaultHost}"
 	log.warning 'reusing vault config and not starting server'
 	return
