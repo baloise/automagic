@@ -12,8 +12,10 @@ class ValuemationCMDB extends Registered implements CMDBService {
 
     String getValuemationURL(){ registry.getService(PropertyService).get('VALUEMATION_URL') }
 
+    String getLink(String changeNo) {"$valuemationURL/vmweb?task=runlink&showgui=true&subwfl=BA_RunlinkOpenBO&xparam_botype=Ticket&xparam_editview=BA_xChange:_edit&xparam_businesskey="}
+
     @Override
-    String createChange(String title,
+    Map<String,String> createChange(String title,
                         String description,
                         String reporterUserId,
                         String approverUserId,
@@ -46,7 +48,8 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 status,
                 parentCategory)
 
-        steps.readJSON(text: response.content).result.data.ticketno
+        String changeNo = steps.readJSON(text: response.content).result.data.ticketno
+        [id :changeNo, link :getLink(changeNo)]
     }
 
 

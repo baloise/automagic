@@ -4,9 +4,9 @@ interface CMDBService {
 	/*
  	 * @param dueDate "YYYY-MM-dd"
  	 * @param status 'To Do','In Progress','Approval','Closed'
- 	 * @return Change number
+ 	 * @return [id :changeNo, link :link]
  	*/
-	String createChange(String title,
+	Map<String,String> createChange(String title,
 						String description,
 						String reporterUserId,
 						String approverUserId,
