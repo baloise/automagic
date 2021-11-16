@@ -1,6 +1,6 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
 automagic,com.baloise.automagic.cmdb.internal,ValuemationCMDB._buildJSON_closure1,145,0,0,0,1,0,5,0,5,0
-automagic,com.baloise.automagic.cmdb.internal,ValuemationCMDB,788,5,20,0,13,0,18,1,8,1
+automagic,com.baloise.automagic.cmdb.internal,ValuemationCMDB,798,5,20,0,13,0,18,1,8,1
 automagic,com.baloise.automagic.common.internal,JenkinsProxySelector,66,0,0,0,3,0,4,0,4,0
 automagic,com.baloise.automagic.common,Automagic,14,7,0,0,0,0,1,1,1,1
 automagic,com.baloise.automagic.common,Registry,299,280,8,0,13,11,10,4,6,4
@@ -8,10 +8,10 @@ automagic,com.baloise.automagic.common,Registered,30,35,1,1,0,1,4,5,3,5
 automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl._put_closure1,41,0,0,0,1,0,3,0,3,0
 automagic,com.baloise.automagic.properties.internal,PropertyImpl,41,5,0,0,1,0,1,1,1,1
 automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl,374,37,8,2,18,2,18,3,14,2
-automagic,com.baloise.automagic.credentials.internal,VaultCredentials,82,0,0,0,2,0,2,0,2,0
+automagic,com.baloise.automagic.credentials.internal,VaultCredentials,91,0,0,0,2,0,2,0,2,0
 automagic,com.baloise.automagic.credentials.internal,JenkinsCredentials,32,5,0,0,2,0,1,1,1,1
-automagic,com.baloise.automagic.credentials.internal,JenkinsCredentials._withCredentials_closure1,98,0,0,0,1,0,4,0,4,0
-automagic,com.baloise.automagic.credentials.internal,VaultCredentials._withCredentials_closure1,43,0,0,0,1,0,3,0,3,0
+automagic,com.baloise.automagic.credentials.internal,JenkinsCredentials._withCredentials_closure1,118,0,0,0,1,0,3,0,3,0
+automagic,com.baloise.automagic.credentials.internal,VaultCredentials._withCredentials_closure1,81,0,0,0,1,0,3,0,3,0
 automagic,com.baloise.automagic.git.internal,GitImpl._checkout_closure1,41,522,0,4,0,26,3,5,3,3
 automagic,com.baloise.automagic.git.internal,GitImpl._commitAllAndPush_closure2,25,148,0,0,0,5,2,3,2,3
 automagic,com.baloise.automagic.git.internal,GitImpl,76,254,5,5,1,8,5,7,0,7
