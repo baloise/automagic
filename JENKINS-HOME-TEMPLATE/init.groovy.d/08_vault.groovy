@@ -38,7 +38,7 @@ vconf.vaultUrl = "http://${vaultHost}"
 
 try {
 	Process vault = "vault server -dev -dev-listen-address=${vaultHost}".execute()
-	Runtime.getRuntime().addShutdownHook(new Thread({ vault.destroyForcibly() }))
+	Runtime.getRuntime().addShutdownHook(new Thread({ log.info("Shutting down vault"); vault.destroyForcibly() }))
 
 	BufferedReader inp = new BufferedReader(new InputStreamReader(vault.in))
 
