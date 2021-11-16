@@ -19,7 +19,7 @@ class VaultCredentials extends Registered implements CredentialsService {
         steps.withVault(vaultSecrets: [
                 [
                         path: "secret/$scope",
-                        secretValues: keys.collect{[envVar: it.toUpperCase(), vaultKey: it]}
+                        secretValues: keys.collect{key -> [envVar: "${scope}_${key}".toUpperCase(), vaultKey: key]}
                 ]
         ], action)
     }

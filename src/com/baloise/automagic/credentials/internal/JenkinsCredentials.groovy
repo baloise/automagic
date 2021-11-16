@@ -16,7 +16,7 @@ class JenkinsCredentials extends Registered implements CredentialsService {
     @Override
     <T> T withCredentials(String scope, List<String> keys, Closure<T> action){
 		steps.withCredentials(
-				keys.collect{steps.string(credentialsId: "AM_${scope}_${it}", variable: it.toUpperCase())},
+				keys.collect{key-> steps.string(credentialsId: "AM_${scope}_${key}", variable: "${scope}_${key}".toUpperCase())},
 				action
 			)
     }
