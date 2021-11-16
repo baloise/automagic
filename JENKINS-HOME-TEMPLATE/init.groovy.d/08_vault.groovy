@@ -95,7 +95,6 @@ set VAULT_TOKEN=${rootToken}
 			cmd += "vault kv put secret/${scope} @${tmpJson.name}\n"
 		}
 		cmdFile.text = cmd
-		log.info cmd
 		log.info "${cmdFile.name}".execute().text
 	} catch(e){
 		log.severe e.message
