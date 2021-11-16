@@ -12,7 +12,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
 
 <span class="nc" id="L13">    String getValuemationURL(){ registry.getService(PropertyService).get('VALUEMATION_URL') }</span>
 
-<span class="nc" id="L15">    String getLink(String changeNo) {&quot;$valuemationURL/vmweb?task=runlink&amp;showgui=true&amp;subwfl=BA_RunlinkOpenBO&amp;xparam_botype=Ticket&amp;xparam_editview=BA_xChange:_edit&amp;xparam_businesskey=&quot;}</span>
+<span class="nc" id="L15">    String getLink(String changeNo) {&quot;$valuemationURL/vmweb?task=runlink&amp;showgui=true&amp;subwfl=BA_RunlinkOpenBO&amp;xparam_botype=Ticket&amp;xparam_editview=BA_xChange:_edit&amp;xparam_businesskey=$changeNo&quot;}</span>
 
     @Override
     Map&lt;String,String&gt; createChange(String title,
