@@ -47,17 +47,20 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 actualUser,
                 status,
                 parentCategory)
-
-<span class="nc" id="L51">        String changeNo = steps.readJSON(text: response.content).result.data.ticketno</span>
-<span class="nc bnc" id="L52" title="All 4 branches missed.">        [id :changeNo, link :getLink(changeNo)]</span>
+<span class="nc" id="L50">        Map responseJSON = steps.readJSON(text: response.content)</span>
+<span class="nc bnc" id="L51" title="All 22 branches missed.">        if(!responseJSON.result || responseJSON.result.score != 'success'){</span>
+<span class="nc" id="L52">            throw new Exception(responseJSON.toString())</span>
+        }
+<span class="nc" id="L54">        String changeNo = responseJSON.result.data.ticketno</span>
+<span class="nc bnc" id="L55" title="All 4 branches missed.">        [id :changeNo, link :getLink(changeNo)]</span>
     }
 
 
     String buildJSON(String workflowName, Map params) {
-<span class="nc" id="L57">        registry.getService(CredentialsService).withCredentials('VALUEMATION',</span>
-<span class="nc" id="L58">              ['USERNAME', 'PASSWORD','ACCESS_TOKEN']</span>
+<span class="nc" id="L60">        registry.getService(CredentialsService).withCredentials('VALUEMATION',</span>
+<span class="nc" id="L61">              ['USERNAME', 'PASSWORD','ACCESS_TOKEN']</span>
         ) {
-<span class="nc" id="L60">            new JsonBuilder(</span>
+<span class="nc" id="L63">            new JsonBuilder(</span>
                 [&quot;username&quot; : steps.VALUEMATION_USERNAME,
                 &quot;password&quot; : steps.VALUEMATION_PASSWORD,
                 &quot;service&quot; : workflowName ,
@@ -69,7 +72,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
         }
     }
 
-<span class="nc" id="L72">    private String mapStatus(String status) { [</span>
+<span class="nc" id="L75">    private String mapStatus(String status) { [</span>
             'To Do' : 'BA_CH_INPG',
             'In Progress' : 'CH_INIMP',
             'Approval' : 'BA_CH_TEST',
@@ -97,10 +100,10 @@ class ValuemationCMDB extends Registered implements CMDBService {
             String parentCategory = &quot;Standard Change&quot;
     ) {
 
-<span class="nc bnc" id="L100" title="All 4 branches missed.">        Map params = [</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">        Map params = [</span>
                 &quot;ticketclass&quot;: &quot;RFC/Change&quot;,
                 &quot;tickettype&quot;: &quot;Standard Change&quot;,
-<span class="nc" id="L103">                &quot;status&quot;: mapStatus(status),</span>
+<span class="nc" id="L106">                &quot;status&quot;: mapStatus(status),</span>
                 &quot;tckShorttext&quot;: title,
                 &quot;description&quot;: description,
                 &quot;statementtype&quot;: &quot;Information&quot;,
@@ -119,16 +122,16 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 &quot;actualUser&quot; : actualUser
         ]
 
-<span class="nc bnc" id="L122" title="All 2 branches missed.">        if(ticketNo) {</span>
-<span class="nc" id="L123">            params.ticketno = ticketNo</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        if(ticketNo) {</span>
+<span class="nc" id="L126">            params.ticketno = ticketNo</span>
         }
 
-<span class="nc" id="L126">        return steps.httpRequest(</span>
+<span class="nc" id="L129">        return steps.httpRequest(</span>
                 acceptType: 'APPLICATION_JSON',
                 contentType: 'APPLICATION_JSON',
                 httpMode: 'POST',
-<span class="nc" id="L130">                requestBody: buildJSON(</span>
-<span class="nc bnc" id="L131" title="All 2 branches missed.">                                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',</span>
+<span class="nc" id="L133">                requestBody: buildJSON(</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">                                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',</span>
                                 params),
                 url: &quot;$valuemationURL/services/workflowExecutionRESTService/runsubworkflowservice/runsubworkflow&quot;
         )
