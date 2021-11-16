@@ -46,7 +46,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 status,
                 parentCategory)
 
-        steps.readJson(response.content).result.data.ticketno
+        steps.readJSON(text: response.content).result.data.ticketno
     }
 
 
