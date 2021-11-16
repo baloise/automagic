@@ -47,8 +47,11 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 actualUser,
                 status,
                 parentCategory)
-
-        String changeNo = steps.readJSON(text: response.content).result.data.ticketno
+        Map responseJSON = steps.readJSON(text: response.content)
+        if(!responseJSON.result || responseJSON.result.score != 'success'){
+            throw new Exception(responseJSON.toString())
+        }
+        String changeNo = responseJSON.result.data.ticketno
         [id :changeNo, link :getLink(changeNo)]
     }
 
