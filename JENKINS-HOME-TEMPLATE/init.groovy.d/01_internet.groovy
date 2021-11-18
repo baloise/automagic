@@ -21,7 +21,7 @@ try {
 	HttpURLConnection con = ProxyConfiguration.open(url) as HttpURLConnection
 	int rspc = con.responseCode
 	log.info "... returned status code $rspc"
-	if(rspc >=300) {
+	if(rspc >=400) {
 		throw new IOException("Bad response code $rspc")	
 	}
 } catch (e) {
