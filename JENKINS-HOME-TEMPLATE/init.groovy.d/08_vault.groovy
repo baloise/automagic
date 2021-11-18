@@ -27,7 +27,7 @@ try {
 
 VaultConfiguration vconf = GlobalVaultConfiguration.get().configuration
 String vaultHost = "127.0.0.1:8280"
-if(!vconf.vaultUrl.contains(vaultHost)) {
+if(vconf.vaultUrl && !vconf.vaultUrl.contains(vaultHost)) {
 	log.warning "Current vault config points to ${vconf.vaultUrl} and not as expected to ${vaultHost}"
 	log.warning 'reusing vault config and not starting server'
 	return
@@ -37,9 +37,23 @@ vconf.vaultCredentialId = 'vaultToken'
 vconf.vaultUrl = "http://${vaultHost}"
 
 try {
-	Process vault = "vault server -dev -dev-listen-address=${vaultHost}".execute()
-	Runtime.getRuntime().addShutdownHook(new Thread({ log.info("Shutting down vault"); vault.destroyForcibly() }))
+	URL url = new URL(vconf.vaultUrl)
+	log.info "Connection to $url ..."
+	HttpURLConnection con = ProxyConfiguration.open(url) as HttpURLConnection
+	int rspc = con.responseCode
+	log.info "... returned status code $rspc"
+	if(rspc >=400) {
+		throw new IOException("Bad response code $rspc")
+	}
+	log.info "vault already running"
+	return 
+} catch (e) {
+	log.info "Starting vault"
+}
 
+
+try {
+	Process vault = "vault server -dev -dev-listen-address=${vaultHost}".execute()
 	BufferedReader inp = new BufferedReader(new InputStreamReader(vault.in))
 
 	String unsealKey, rootToken
@@ -57,8 +71,15 @@ try {
 		}
 	}
 	inp.close()
-	println unsealKey
-	println rootToken
+	
+	new File("target").mkdirs()
+	new File("target/vault.txt").text = """
+unsealKey	: $unsealKey
+rootToken	: $rootToken
+URL			: ${vconf.vaultUrl}
+PID			: ${vault.pid()}
+"""
+	
 	if (!rootToken) {
 		log.warning "VAULT_TOKEN not detected. Skipping vault."
 		vconf.vaultCredentialId = null
