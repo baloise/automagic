@@ -7,12 +7,14 @@ import com.baloise.automagic.properties.PropertyService
 import groovy.json.JsonBuilder
 import jenkins.plugins.http_request.ResponseContentSupplier
 
+import javax.annotation.Nullable
+
 class ValuemationCMDB extends Registered implements CMDBService {
 
 
-<span class="nc" id="L13">    String getValuemationURL(){ registry.getService(PropertyService).get('VALUEMATION_URL') }</span>
+<span class="nc" id="L15">    String getValuemationURL(){ registry.getService(PropertyService).get('VALUEMATION_URL') }</span>
 
-<span class="nc" id="L15">    String getLink(String changeNo) {&quot;$valuemationURL/vmweb?task=runlink&amp;showgui=true&amp;subwfl=BA_RunlinkOpenBO&amp;xparam_botype=Ticket&amp;xparam_editview=BA_xChange:_edit&amp;xparam_businesskey=$changeNo&quot;}</span>
+<span class="nc" id="L17">    String getLink(String changeNo) {&quot;$valuemationURL/vmweb?task=runlink&amp;showgui=true&amp;subwfl=RunlinkOpenBO&amp;xparam_botype=Ticket&amp;xparam_businesskey=$changeNo&quot;}</span>
 
     @Override
     Map&lt;String,String&gt; createChange(String title,
@@ -22,62 +24,72 @@ class ValuemationCMDB extends Registered implements CMDBService {
                         String assigneeUserId,
                         String service,
                         String system,
-                        String sbu,
                         String dueDate,//&quot;YYYY-MM-dd&quot;
                         String environment,
-                        String ppmsProject,
                         String issueId,
                         String category,
                         String actualUser,
                         String status = 'To Do',
-                        String parentCategory = &quot;Standard Change&quot;) {
-<span class="nc" id="L34">        ResponseContentSupplier response = createOrUpdateTicket(null, title,</span>
+                        String parentCategory = &quot;Infrastructure-Network&quot;
+                        ) {
+<span class="nc" id="L35">        ResponseContentSupplier response = createOrUpdateTicket(null, title,</span>
                 description,
                 reporterUserId,
                 approverUserId,
                 assigneeUserId,
                 service,
                 system,
-                sbu,
                 dueDate,
                 environment,
-                ppmsProject,
                 issueId,
                 category,
                 actualUser,
                 status,
                 parentCategory)
-<span class="nc" id="L50">        Map responseJSON = steps.readJSON(text: response.content)</span>
-<span class="nc bnc" id="L51" title="All 22 branches missed.">        if(!responseJSON.result || responseJSON.result.score != 'success'){</span>
-<span class="nc" id="L52">            throw new Exception(responseJSON.toString())</span>
+<span class="nc" id="L49">        Map responseJSON = steps.readJSON(text: response.content)</span>
+<span class="nc bnc" id="L50" title="All 22 branches missed.">        if(!responseJSON.result || responseJSON.result.score != 'success'){</span>
+<span class="nc" id="L51">            throw new Exception(responseJSON.toString())</span>
         }
-<span class="nc" id="L54">        String changeNo = responseJSON.result.data.ticketno</span>
-<span class="nc bnc" id="L55" title="All 4 branches missed.">        [id :changeNo, link :getLink(changeNo)]</span>
+<span class="nc" id="L53">        String changeNo = responseJSON.result.data.ticketno</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">        [id :changeNo, link :getLink(changeNo)]</span>
     }
 
 
     String buildJSON(String workflowName, Map params) {
-<span class="nc" id="L60">        registry.getService(CredentialsService).withCredentials('VALUEMATION',</span>
-<span class="nc" id="L61">              ['USERNAME', 'PASSWORD','ACCESS_TOKEN']</span>
+<span class="nc" id="L59">        registry.getService(CredentialsService).withCredentials('VALUEMATION',</span>
+<span class="nc" id="L60">              ['USERNAME', 'PASSWORD','ACCESS_TOKEN']</span>
         ) {
-<span class="nc" id="L63">            new JsonBuilder(</span>
+<span class="nc" id="L62">            new JsonBuilder(</span>
                 [&quot;username&quot; : steps.VALUEMATION_USERNAME,
                 &quot;password&quot; : steps.VALUEMATION_PASSWORD,
                 &quot;service&quot; : workflowName ,
                 &quot;accessToken&quot; : steps.VALUEMATION_ACCESS_TOKEN,
-                &quot;encrypted&quot; : &quot;Y&quot;,
+                &quot;encrypted&quot; : &quot;N&quot;,
                  &quot;params&quot; : params
                 ]
             ).toString()
         }
     }
 
-<span class="nc" id="L75">    private String mapStatus(String status) { [</span>
-            'To Do' : 'BA_CH_INPG',
+<span class="nc" id="L74">    private String mapStatus(String status) { [</span>
+            'To Do' : 'CH_REC',
             'In Progress' : 'CH_INIMP',
             'Approval' : 'BA_CH_TEST',
             'Closed' : 'CH_CLD'
     ][status]
+    }
+<span class="nc" id="L81">    private String mapEnvironment(String env) { [</span>
+            'development' : 1,
+            'test' : 2,
+            'production' : 3,
+            'training' : 4,
+            'integration' : 6,
+            'acceptance' : 7
+<span class="nc" id="L88">    ][env.toLowerCase().trim()]</span>
+    }
+<span class="nc" id="L90">    private String mapService(String service) { [</span>
+            'balsy ch' : 2367
+<span class="nc" id="L92">    ][service.toLowerCase().trim()]</span>
     }
 
     ResponseContentSupplier createOrUpdateTicket(
@@ -88,52 +100,51 @@ class ValuemationCMDB extends Registered implements CMDBService {
             String approverUserId,
             String assigneeUserId,
             String service,
-            String system,
-            String sbu,
+            @Nullable String system,
             String dueDate,
             String environment,
-            String ppmsProject,
             String issueId,
             String category,
             String actualUser,
             String status,
-            String parentCategory = &quot;Standard Change&quot;
+            String parentCategory
     ) {
 
-<span class="nc bnc" id="L103" title="All 4 branches missed.">        Map params = [</span>
+<span class="nc bnc" id="L113" title="All 4 branches missed.">        Map params = [</span>
                 &quot;ticketclass&quot;: &quot;RFC/Change&quot;,
                 &quot;tickettype&quot;: &quot;Standard Change&quot;,
-<span class="nc" id="L106">                &quot;status&quot;: mapStatus(status),</span>
+<span class="nc" id="L116">                &quot;status&quot;: mapStatus(status),</span>
                 &quot;tckShorttext&quot;: title,
                 &quot;description&quot;: description,
                 &quot;statementtype&quot;: &quot;Information&quot;,
                 &quot;persnoReqBy&quot;: reporterUserId,
                 &quot;persnoAffected&quot;: assigneeUserId, // changeOwner
-                &quot;personChangeApprover&quot; : approverUserId,
-                &quot;category&quot;: category,
                 &quot;catParent&quot;: parentCategory,
-                &quot;xservice&quot;: service,
+                &quot;category&quot;: category,
+<span class="nc" id="L124">                &quot;servicesid&quot;: mapService(service),</span>
                 &quot;system&quot;: system,
-                &quot;sbu&quot;: sbu,
                 &quot;dueDate&quot;: dueDate,
-                &quot;environment&quot;: environment,
-                &quot;project&quot;: ppmsProject,
-                &quot;jiraIssue&quot;: issueId,
-                &quot;actualUser&quot; : actualUser
+<span class="nc" id="L127">                &quot;environmentId&quot;: mapEnvironment(environment),</span>
+                &quot;personcurrent&quot;: actualUser,
+                &quot;actualUser&quot; : actualUser,
+                &quot;changeOwnerPersonNo&quot;: approverUserId,
+                &quot;changeOwnerGroup&quot;: &quot;CHANGE MANAGER&quot;
         ]
 
-<span class="nc bnc" id="L125" title="All 2 branches missed.">        if(ticketNo) {</span>
-<span class="nc" id="L126">            params.ticketno = ticketNo</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if(ticketNo) {</span>
+<span class="nc" id="L135">            params.ticketno = ticketNo</span>
         }
 
-<span class="nc" id="L129">        return steps.httpRequest(</span>
+<span class="nc" id="L138">        String body = buildJSON(</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',</span>
+                params)
+<span class="nc" id="L141">        steps.echo body</span>
+<span class="nc" id="L142">        return steps.httpRequest(</span>
                 acceptType: 'APPLICATION_JSON',
                 contentType: 'APPLICATION_JSON',
                 httpMode: 'POST',
-<span class="nc" id="L133">                requestBody: buildJSON(</span>
-<span class="nc bnc" id="L134" title="All 2 branches missed.">                                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',</span>
-                                params),
-                url: &quot;$valuemationURL/services/workflowExecutionRESTService/runsubworkflowservice/runsubworkflow&quot;
+                requestBody: body,
+                url: &quot;$valuemationURL/services/api/execwf&quot;
         )
     }
 }
