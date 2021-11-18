@@ -138,7 +138,6 @@ class ValuemationCMDB extends Registered implements CMDBService {
         String body = buildJSON(
                 ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',
                 params)
-        steps.echo body
         return steps.httpRequest(
                 acceptType: 'APPLICATION_JSON',
                 contentType: 'APPLICATION_JSON',
