@@ -7,12 +7,14 @@ import com.baloise.automagic.properties.PropertyService
 import groovy.json.JsonBuilder
 import jenkins.plugins.http_request.ResponseContentSupplier
 
+import javax.annotation.Nullable
+
 class ValuemationCMDB extends Registered implements CMDBService {
 
 
     String getValuemationURL(){ registry.getService(PropertyService).get('VALUEMATION_URL') }
 
-    String getLink(String changeNo) {"$valuemationURL/vmweb?task=runlink&showgui=true&subwfl=BA_RunlinkOpenBO&xparam_botype=Ticket&xparam_editview=BA_xChange:_edit&xparam_businesskey=$changeNo"}
+    String getLink(String changeNo) {"$valuemationURL/vmweb?task=runlink&showgui=true&subwfl=RunlinkOpenBO&xparam_botype=Ticket&xparam_businesskey=$changeNo"}
 
     @Override
     Map<String,String> createChange(String title,
@@ -22,15 +24,14 @@ class ValuemationCMDB extends Registered implements CMDBService {
                         String assigneeUserId,
                         String service,
                         String system,
-                        String sbu,
                         String dueDate,//"YYYY-MM-dd"
                         String environment,
-                        String ppmsProject,
                         String issueId,
                         String category,
                         String actualUser,
                         String status = 'To Do',
-                        String parentCategory = "Standard Change") {
+                        String parentCategory = "Infrastructure-Network"
+                        ) {
         ResponseContentSupplier response = createOrUpdateTicket(null, title,
                 description,
                 reporterUserId,
@@ -38,10 +39,8 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 assigneeUserId,
                 service,
                 system,
-                sbu,
                 dueDate,
                 environment,
-                ppmsProject,
                 issueId,
                 category,
                 actualUser,
@@ -65,7 +64,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 "password" : steps.VALUEMATION_PASSWORD,
                 "service" : workflowName ,
                 "accessToken" : steps.VALUEMATION_ACCESS_TOKEN,
-                "encrypted" : "Y",
+                "encrypted" : "N",
                  "params" : params
                 ]
             ).toString()
@@ -73,11 +72,24 @@ class ValuemationCMDB extends Registered implements CMDBService {
     }
 
     private String mapStatus(String status) { [
-            'To Do' : 'BA_CH_INPG',
+            'To Do' : 'CH_REC',
             'In Progress' : 'CH_INIMP',
             'Approval' : 'BA_CH_TEST',
             'Closed' : 'CH_CLD'
     ][status]
+    }
+    private String mapEnvironment(String env) { [
+            'development' : 1,
+            'test' : 2,
+            'production' : 3,
+            'training' : 4,
+            'integration' : 6,
+            'acceptance' : 7
+    ][env.toLowerCase().trim()]
+    }
+    private String mapService(String service) { [
+            'balsy ch' : 2367
+    ][service.toLowerCase().trim()]
     }
 
     ResponseContentSupplier createOrUpdateTicket(
@@ -88,16 +100,14 @@ class ValuemationCMDB extends Registered implements CMDBService {
             String approverUserId,
             String assigneeUserId,
             String service,
-            String system,
-            String sbu,
+            @Nullable String system,
             String dueDate,
             String environment,
-            String ppmsProject,
             String issueId,
             String category,
             String actualUser,
             String status,
-            String parentCategory = "Standard Change"
+            String parentCategory
     ) {
 
         Map params = [
@@ -109,31 +119,32 @@ class ValuemationCMDB extends Registered implements CMDBService {
                 "statementtype": "Information",
                 "persnoReqBy": reporterUserId,
                 "persnoAffected": assigneeUserId, // changeOwner
-                "personChangeApprover" : approverUserId,
-                "category": category,
                 "catParent": parentCategory,
-                "xservice": service,
+                "category": category,
+                "servicesid": mapService(service),
                 "system": system,
-                "sbu": sbu,
                 "dueDate": dueDate,
-                "environment": environment,
-                "project": ppmsProject,
-                "jiraIssue": issueId,
-                "actualUser" : actualUser
+                "environmentId": mapEnvironment(environment),
+                "personcurrent": actualUser,
+                "actualUser" : actualUser,
+                "changeOwnerPersonNo": approverUserId,
+                "changeOwnerGroup": "CHANGE MANAGER"
         ]
 
         if(ticketNo) {
             params.ticketno = ticketNo
         }
 
+        String body = buildJSON(
+                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',
+                params)
+        steps.echo body
         return steps.httpRequest(
                 acceptType: 'APPLICATION_JSON',
                 contentType: 'APPLICATION_JSON',
                 httpMode: 'POST',
-                requestBody: buildJSON(
-                                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',
-                                params),
-                url: "$valuemationURL/services/workflowExecutionRESTService/runsubworkflowservice/runsubworkflow"
+                requestBody: body,
+                url: "$valuemationURL/services/api/execwf"
         )
     }
 }
