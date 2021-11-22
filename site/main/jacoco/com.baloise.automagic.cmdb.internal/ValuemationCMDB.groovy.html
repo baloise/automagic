@@ -138,8 +138,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
 <span class="nc" id="L138">        String body = buildJSON(</span>
 <span class="nc bnc" id="L139" title="All 2 branches missed.">                ticketNo ? 'UpdateBAStandardChange' : 'CreateBAStandardChange',</span>
                 params)
-<span class="nc" id="L141">        steps.echo body</span>
-<span class="nc" id="L142">        return steps.httpRequest(</span>
+<span class="nc" id="L141">        return steps.httpRequest(</span>
                 acceptType: 'APPLICATION_JSON',
                 contentType: 'APPLICATION_JSON',
                 httpMode: 'POST',
