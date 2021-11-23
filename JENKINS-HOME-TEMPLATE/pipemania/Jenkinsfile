@@ -1,9 +1,19 @@
-// use library source from git
-//library 'automagic-git@release'
-
 // use library source from disk
-library 'automagic@release'
+@Library('automagic@release')_
 
-println(am_greet("el disco duro"))
+// use library source from git
+//@Library('automagic-git@release')_
 
-// use this job as template to develop pipelines for real projects
+pipeline {
+	agent any
+	stages {
+		stage("AutoMagic") {
+			steps {
+				script {
+					// use this job as template to develop pipelines for real projects
+					println(am_greet("el disco duro"))
+				}
+			}
+		}
+	}
+}
