@@ -118,5 +118,20 @@ class GitImpl extends Registered implements GitService {
 			}
 		//}
 	}
+
+	@Override
+	String getCommitLink(String hash, String url) {
+		try {
+<span class="fc" id="L125">			switch (url[8..-5]) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">				case ~/^(bitbucket|vcs).*/:</span>
+<span class="fc" id="L127">					def (org, repo) = url[0..-5].split('/')[-2..-1]</span>
+<span class="fc" id="L128">					return &quot;https://bitbucket.balgroupit.com/projects/${org.toUpperCase()}/repos/${repo}/commits/$hash&quot;</span>
+				default:
+<span class="pc" id="L130">					return &quot;${url[0..-5]}/commit/$hash&quot;</span>
+			}
+		} catch(e) {
+<span class="pc" id="L133">			return &quot;https://github.com/baloise/automagic/blob/main/test/src/com/baloise/automagic/git/GitServiceTest.groovy?hash=${hash}&amp;url=${url}#L25&quot;</span>
+		}
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
