@@ -22,6 +22,47 @@ class GitServiceTest {
 		git = MockRegistry.get().getService(GitService)
 	}
 
+	// If you are viewing this in your browser, you might have found a bug in automagic.
+	// If you are a developer you can test & implement below otherwise please file a bug under https://github.com/baloise/automagic/issues
+	// You find should see the url and hash variables in you browsers address bar.
+	// Thanks for you contribution :-)
+
+	@Test
+	void getLinkFallback() {
+		assertEquals(
+			'https://github.com/baloise/automagic/blob/main/test/src/com/baloise/automagic/git/GitServiceTest.groovy?hash=h13&url=null#L25',
+			git.getCommitLink('h13',null))
+	}
+
+	@Test
+	void getLinkBitBucket() {
+		assertEquals(
+			'https://bitbucket.balgroupit.com/projects/EINZELLEBEN/repos/server/commits/2d4f7f31ade6859dd0925cb068f9f627befa8d98',
+			git.getCommitLink('2d4f7f31ade6859dd0925cb068f9f627befa8d98','https://bitbucket.balgroupit.com/scm/einzelleben/server.git'))
+	}
+
+	@Test
+	void getLinkVCS() {
+		assertEquals(
+			'https://bitbucket.balgroupit.com/projects/DIVAPPL/repos/KLMahnen/commits/eb6bd2471a908224a66549a9285faa027bd6fd4a',
+			git.getCommitLink('eb6bd2471a908224a66549a9285faa027bd6fd4a','https://vcs.balgroupit.com/git/divappl/KLMahnen.git'))
+	}
+
+	@Test
+	void getLinkGithub() {
+		assertEquals(
+			'https://github.com/baloise/automagic/commit/10779f194e2f5141157c7bc11c056dc78739ab42',
+			git.getCommitLink('10779f194e2f5141157c7bc11c056dc78739ab42','https://github.com/baloise/automagic.git'))
+	}
+
+	@Test
+	void getLinkGitea() {
+		assertEquals(
+			'https://git.balgroupit.com/ITCH-playground/CashCalculator/commit/bb300a36b43f6992d7d9aa51895d1bef5a7450a3',
+			git.getCommitLink('bb300a36b43f6992d7d9aa51895d1bef5a7450a3','https://git.balgroupit.com/ITCH-playground/CashCalculator.git'))
+	}
+
+
 	@Test
 	void getUrl() {
 		assertEquals('https://github.com/baloise/automagic.git', git.url)

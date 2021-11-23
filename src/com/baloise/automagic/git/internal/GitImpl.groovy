@@ -118,4 +118,19 @@ class GitImpl extends Registered implements GitService {
 			}
 		//}
 	}
+
+	@Override
+	String getCommitLink(String hash, String url) {
+		try {
+			switch (url[8..-5]) {
+				case ~/^(bitbucket|vcs).*/:
+					def (org, repo) = url[0..-5].split('/')[-2..-1]
+					return "https://bitbucket.balgroupit.com/projects/${org.toUpperCase()}/repos/${repo}/commits/$hash"
+				default:
+					return "${url[0..-5]}/commit/$hash"
+			}
+		} catch(e) {
+			return "https://github.com/baloise/automagic/blob/main/test/src/com/baloise/automagic/git/GitServiceTest.groovy?hash=${hash}&url=${url}#L25"
+		}
+	}
 }
