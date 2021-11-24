@@ -20,15 +20,15 @@ public class CredentialsServiceTest {
     @Test()
     void getInexistant() {
         service.withCredentials("inexistant", ["nope"]){
-            assertNull(NOPE)
+            assertNull(INEXISTANT_NOPE)
         }
     }
 
     @Test
     void getGIT() {
         service.withCredentials("GIT", ["PASSWORD", 'USERNAME']){
-            assertEquals('sesam', PASSWORD)
-            assertEquals('automagic', USERNAME )
+            assertEquals('sesam', GIT_PASSWORD)
+            assertEquals('automagic', GIT_USERNAME )
         }
     }
 }

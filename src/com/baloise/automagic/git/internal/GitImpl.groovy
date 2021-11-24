@@ -46,9 +46,9 @@ class GitImpl extends Registered implements GitService {
 	@Override
 	public void checkout(final String url, final String branchName, final File workdir ) {
 		//registry.withProxySelector {
-			registry.getService(CredentialsService).withCredentials('GIT',['GIT_USERNAME', 'GIT_PASSWORD']) {
+			registry.getService(CredentialsService).withCredentials('GIT',['USERNAME', 'PASSWORD']) {
 				final String branch = "refs/heads/" + branchName
-				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.USERNAME,steps.PASSWORD)
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.GIT_USERNAME,steps.GIT_PASSWORD)
 				if (workdir.exists()) {
 					Git git = new Git(new FileRepositoryBuilder()
 							.setWorkTree(workdir)
@@ -101,8 +101,8 @@ class GitImpl extends Registered implements GitService {
 		if(!message) throw new IllegalArgumentException("commit message must not be empty")
 		if(!workdir.exists()) throw new IllegalArgumentException("$workdir not found")
 		//registry.withProxySelector {
-			registry.getService(CredentialsService).withCredentials('GIT',['GIT_USERNAME', 'GIT_PASSWORD']) {
-				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.USERNAME, steps.PASSWORD)
+			registry.getService(CredentialsService).withCredentials('GIT',['USERNAME', 'PASSWORD']) {
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.GIT_USERNAME, steps.GIT_PASSWORD)
 
 				Git git = new Git(new FileRepositoryBuilder()
 						.setWorkTree(workdir)
