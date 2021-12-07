@@ -8,6 +8,7 @@ import com.baloise.automagic.properties.PropertyService
 import com.cloudbees.groovy.cps.NonCPS
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ResetCommand
+import org.eclipse.jgit.api.errors.GitAPIException
 import org.eclipse.jgit.lib.StoredConfig
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.transport.CredentialsProvider
@@ -22,7 +23,7 @@ class GitImpl extends Registered implements GitService {
 
 	
 	private boolean isRemoteBranch(String url, String branch, CredentialsProvider cp){
-<span class="pc" id="L25">		Git.lsRemoteRepository()</span>
+<span class="pc" id="L26">		Git.lsRemoteRepository()</span>
 				.setRemote(url)
 				.setCredentialsProvider(cp)
 				.setHeads(true)
@@ -30,67 +31,73 @@ class GitImpl extends Registered implements GitService {
 	}
 
 	
-<span class="pc" id="L33">	String getAuthor(){ registry.getService(PropertyService).get('GIT_AUTHOR_NAME') }</span>
+<span class="pc" id="L34">	String getAuthor(){ registry.getService(PropertyService).get('GIT_AUTHOR_NAME') }</span>
 
 	
-<span class="pc" id="L36">	String getAuthorEmail(){registry.getService(PropertyService).get('GIT_AUTHOR_EMAIL')}</span>
+<span class="pc" id="L37">	String getAuthorEmail(){registry.getService(PropertyService).get('GIT_AUTHOR_EMAIL')}</span>
 
 	
 	@Override
 	String getUrl() {
-<span class="pc bpc" id="L41" title="1 of 2 branches missed.">		if(steps?.scm?.getClass()?.simpleName=='GitSCM') return steps.scm.userRemoteConfigs[0].url</span>
-<span class="nc" id="L42">		throw new IllegalStateException('wrong scm:'+steps?.scm)</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if(steps?.scm?.getClass()?.simpleName=='GitSCM') return steps.scm.userRemoteConfigs[0].url</span>
+<span class="nc" id="L43">		throw new IllegalStateException('wrong scm:'+steps?.scm)</span>
 	}
 
 	
 	@Override
 	public void checkout(final String url, final String branchName, final File workdir ) {
 		//registry.withProxySelector {
-<span class="fc" id="L49">			registry.getService(CredentialsService).withCredentials('GIT',['GIT_USERNAME', 'GIT_PASSWORD']) {</span>
-<span class="fc" id="L50">				final String branch = &quot;refs/heads/&quot; + branchName</span>
-<span class="fc" id="L51">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.USERNAME,steps.PASSWORD)</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">				if (workdir.exists()) {</span>
-<span class="fc" id="L53">					Git git = new Git(new FileRepositoryBuilder()</span>
-							.setWorkTree(workdir)
-							.build())
-<span class="fc" id="L56">					git.fetch()</span>
-							.setRemote(&quot;origin&quot;)
-<span class="fc" id="L58">							.setRefSpecs(new RefSpec(branch))</span>
-							.setCredentialsProvider(cp).call()
-<span class="fc" id="L60">					git.checkout().setName(branch).setForce(true).call()</span>
-<span class="fc" id="L61">					git.reset().setRef(branch).setMode(ResetCommand.ResetType.HARD).call()</span>
-<span class="pc" id="L62">					git.clean().setForce(true).call()</span>
-				} else {
-<span class="fc" id="L64">					workdir.mkdirs()</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">					if (isRemoteBranch(url, branch, cp)) {</span>
-<span class="fc" id="L66">						Git git = Git.cloneRepository()</span>
-								.setURI(url)
-<span class="pc" id="L68">								.setBranchesToClone([branch])</span>
-								.setBranch(branch)
-								.setDirectory(workdir)
-								.setCredentialsProvider(cp)
-								.call()
-					} else {
-<span class="fc" id="L74">						Git git = Git.init()</span>
-								.setDirectory(workdir)
-								.call()
-<span class="fc" id="L77">						new File(workdir, '.automagic').text = 'v' + Automagic.VERSION</span>
-<span class="fc" id="L78">						git.add().addFilepattern(&quot;.&quot;).call()</span>
-
-<span class="fc" id="L80">						git.commit()</span>
-								.setCommitter(author, authorEmail)
-								.setMessage('initial commit').call()
-<span class="fc" id="L83">						git.branchRename().setNewName(branchName).call()</span>
-<span class="fc" id="L84">						StoredConfig config = git.getRepository().getConfig()</span>
-<span class="fc" id="L85">						config.setString(CONFIG_REMOTE_SECTION, &quot;origin&quot;, &quot;url&quot;, url)</span>
-<span class="fc" id="L86">						config.setString(CONFIG_REMOTE_SECTION, &quot;origin&quot;, &quot;fetch&quot;, &quot;+refs/heads/*:refs/remotes/origin/*&quot;);</span>
-<span class="fc" id="L87">						config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;remote&quot;, &quot;origin&quot;);</span>
-<span class="fc" id="L88">						config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;rebase&quot;, &quot;false&quot;);</span>
-<span class="fc" id="L89">						config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;merge&quot;, &quot;refs/heads/$branchName&quot;);</span>
-<span class="fc" id="L90">						config.save();</span>
-<span class="pc" id="L91">						git.push().setCredentialsProvider(cp).call()</span>
+<span class="fc" id="L50">			registry.getService(CredentialsService).withCredentials('GIT',['USERNAME', 'PASSWORD']) {</span>
+<span class="fc" id="L51">				final String branch = &quot;refs/heads/&quot; + branchName</span>
+<span class="fc" id="L52">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.GIT_USERNAME,steps.GIT_PASSWORD)</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">				if (workdir.exists()) {</span>
+					try {
+<span class="fc" id="L55">						Git git = new Git(new FileRepositoryBuilder()</span>
+								.setWorkTree(workdir)
+								.build())
+<span class="fc" id="L58">						git.fetch()</span>
+								.setRemote(&quot;origin&quot;)
+<span class="fc" id="L60">								.setRefSpecs(new RefSpec(branch))</span>
+								.setCredentialsProvider(cp).call()
+<span class="fc" id="L62">						git.checkout().setName(branch).setForce(true).call()</span>
+<span class="fc" id="L63">						git.reset().setRef(branch).setMode(ResetCommand.ResetType.HARD).call()</span>
+<span class="fc" id="L64">						git.clean().setForce(true).call()</span>
+<span class="pc" id="L65">						return</span>
+					} catch(GitAPIException gitAPIException){
+<span class="fc" id="L67">						steps.echo gitAPIException.message</span>
+<span class="fc" id="L68">						steps.echo &quot;reinitialising $workdir&quot;</span>
+<span class="pc" id="L69">						workdir.deleteDir()</span>
 					}
-			  }
+				}
+<span class="fc" id="L72">				workdir.mkdirs()</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">				if (isRemoteBranch(url, branch, cp)) {</span>
+<span class="fc" id="L74">					Git git = Git.cloneRepository()</span>
+							.setURI(url)
+<span class="pc" id="L76">							.setBranchesToClone([branch])</span>
+							.setBranch(branch)
+							.setDirectory(workdir)
+							.setCredentialsProvider(cp)
+							.call()
+				} else {
+<span class="fc" id="L82">					Git git = Git.init()</span>
+							.setDirectory(workdir)
+							.call()
+<span class="fc" id="L85">					new File(workdir, '.automagic').text = 'v' + Automagic.VERSION</span>
+<span class="fc" id="L86">					git.add().addFilepattern(&quot;.&quot;).call()</span>
+
+<span class="fc" id="L88">					git.commit()</span>
+							.setCommitter(author, authorEmail)
+							.setMessage('initial commit').call()
+<span class="fc" id="L91">					git.branchRename().setNewName(branchName).call()</span>
+<span class="fc" id="L92">					StoredConfig config = git.getRepository().getConfig()</span>
+<span class="fc" id="L93">					config.setString(CONFIG_REMOTE_SECTION, &quot;origin&quot;, &quot;url&quot;, url)</span>
+<span class="fc" id="L94">					config.setString(CONFIG_REMOTE_SECTION, &quot;origin&quot;, &quot;fetch&quot;, &quot;+refs/heads/*:refs/remotes/origin/*&quot;);</span>
+<span class="fc" id="L95">					config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;remote&quot;, &quot;origin&quot;);</span>
+<span class="fc" id="L96">					config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;rebase&quot;, &quot;false&quot;);</span>
+<span class="fc" id="L97">					config.setString(CONFIG_BRANCH_SECTION, branchName, &quot;merge&quot;, &quot;refs/heads/$branchName&quot;);</span>
+<span class="fc" id="L98">					config.save();</span>
+<span class="pc" id="L99">					git.push().setCredentialsProvider(cp).call()</span>
+				}
 			}
 		//}
 	}
@@ -98,23 +105,23 @@ class GitImpl extends Registered implements GitService {
 	
 	@Override
 	void commitAllAndPush(File workdir, String message) {
-<span class="pc bpc" id="L101" title="2 of 4 branches missed.">		if(!message) throw new IllegalArgumentException(&quot;commit message must not be empty&quot;)</span>
-<span class="pc bpc" id="L102" title="2 of 4 branches missed.">		if(!workdir.exists()) throw new IllegalArgumentException(&quot;$workdir not found&quot;)</span>
+<span class="pc bpc" id="L108" title="2 of 4 branches missed.">		if(!message) throw new IllegalArgumentException(&quot;commit message must not be empty&quot;)</span>
+<span class="pc bpc" id="L109" title="2 of 4 branches missed.">		if(!workdir.exists()) throw new IllegalArgumentException(&quot;$workdir not found&quot;)</span>
 		//registry.withProxySelector {
-<span class="fc" id="L104">			registry.getService(CredentialsService).withCredentials('GIT',['GIT_USERNAME', 'GIT_PASSWORD']) {</span>
-<span class="fc" id="L105">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.USERNAME, steps.PASSWORD)</span>
+<span class="fc" id="L111">			registry.getService(CredentialsService).withCredentials('GIT',['USERNAME', 'PASSWORD']) {</span>
+<span class="fc" id="L112">				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.GIT_USERNAME, steps.GIT_PASSWORD)</span>
 
-<span class="fc" id="L107">				Git git = new Git(new FileRepositoryBuilder()</span>
+<span class="fc" id="L114">				Git git = new Git(new FileRepositoryBuilder()</span>
 						.setWorkTree(workdir)
 						.build())
 
-<span class="fc" id="L111">				git.add().addFilepattern(&quot;.&quot;).call()</span>
+<span class="fc" id="L118">				git.add().addFilepattern(&quot;.&quot;).call()</span>
 
-<span class="fc" id="L113">				git.commit()</span>
+<span class="fc" id="L120">				git.commit()</span>
 						.setCommitter(author, authorEmail)
 						.setMessage(message).call()
 
-<span class="pc" id="L117">				git.push().setCredentialsProvider(cp).call()</span>
+<span class="pc" id="L124">				git.push().setCredentialsProvider(cp).call()</span>
 			}
 		//}
 	}
@@ -122,15 +129,15 @@ class GitImpl extends Registered implements GitService {
 	@Override
 	String getCommitLink(String hash, String url) {
 		try {
-<span class="fc" id="L125">			switch (url[8..-5]) {</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">				case ~/^(bitbucket|vcs).*/:</span>
-<span class="fc" id="L127">					def (org, repo) = url[0..-5].split('/')[-2..-1]</span>
-<span class="fc" id="L128">					return &quot;https://bitbucket.balgroupit.com/projects/${org.toUpperCase()}/repos/${repo}/commits/$hash&quot;</span>
+<span class="fc" id="L132">			switch (url[8..-5]) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">				case ~/^(bitbucket|vcs).*/:</span>
+<span class="fc" id="L134">					def (org, repo) = url[0..-5].split('/')[-2..-1]</span>
+<span class="fc" id="L135">					return &quot;https://bitbucket.balgroupit.com/projects/${org.toUpperCase()}/repos/${repo}/commits/$hash&quot;</span>
 				default:
-<span class="pc" id="L130">					return &quot;${url[0..-5]}/commit/$hash&quot;</span>
+<span class="pc" id="L137">					return &quot;${url[0..-5]}/commit/$hash&quot;</span>
 			}
 		} catch(e) {
-<span class="pc" id="L133">			return &quot;https://github.com/baloise/automagic/blob/main/test/src/com/baloise/automagic/git/GitServiceTest.groovy?hash=${hash}&amp;url=${url}#L25&quot;</span>
+<span class="pc" id="L140">			return &quot;https://github.com/baloise/automagic/blob/main/test/src/com/baloise/automagic/git/GitServiceTest.groovy?hash=${hash}&amp;url=${url}#L25&quot;</span>
 		}
 	}
 }
