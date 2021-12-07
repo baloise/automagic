@@ -6,29 +6,31 @@ import org.junit.Before
 import org.junit.Test
 
 import static org.junit.Assert.assertEquals
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNull
 
-public class CredentialsServiceTest {
+class CredentialsServiceTest {
 
     CredentialsService service
+    def steps
 
     @Before
     void setUp() {
         service = MockRegistry.get().getService(CredentialsService)
+        steps = service.steps
     }
 
     @Test()
     void getInexistant() {
         service.withCredentials("inexistant", ["nope"]){
-            assertNull(INEXISTANT_NOPE)
+            assertNull(steps.INEXISTANT_NOPE)
         }
     }
 
     @Test
     void getGIT() {
         service.withCredentials("GIT", ["PASSWORD", 'USERNAME']){
-            assertEquals('sesam', GIT_PASSWORD)
-            assertEquals('automagic', GIT_USERNAME )
+            assertEquals('sesam', steps.GIT_PASSWORD)
+            assertEquals('automagic', steps.GIT_USERNAME )
         }
     }
 }
