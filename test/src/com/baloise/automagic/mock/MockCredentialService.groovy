@@ -8,8 +8,7 @@ class MockCredentialService implements CredentialsService{
     @Override
     <T> T withCredentials(String credentialId, List<String> keys, Closure<T> action) {
         Map tmp = credentials[credentialId]
-        if(tmp) steps.putAll(credentials[credentialId])
-        action.delegate = new Expando(tmp)
+        if(tmp) tmp.each {k,v->action.steps["${credentialId}_${k}"]=v}
         action()
     }
 }

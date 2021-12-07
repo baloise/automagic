@@ -8,6 +8,7 @@ import com.baloise.automagic.properties.PropertyService
 import com.cloudbees.groovy.cps.NonCPS
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.api.ResetCommand
+import org.eclipse.jgit.api.errors.GitAPIException
 import org.eclipse.jgit.lib.StoredConfig
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.transport.CredentialsProvider
@@ -50,47 +51,53 @@ class GitImpl extends Registered implements GitService {
 				final String branch = "refs/heads/" + branchName
 				CredentialsProvider cp = new UsernamePasswordCredentialsProvider(steps.GIT_USERNAME,steps.GIT_PASSWORD)
 				if (workdir.exists()) {
-					Git git = new Git(new FileRepositoryBuilder()
-							.setWorkTree(workdir)
-							.build())
-					git.fetch()
-							.setRemote("origin")
-							.setRefSpecs(new RefSpec(branch))
-							.setCredentialsProvider(cp).call()
-					git.checkout().setName(branch).setForce(true).call()
-					git.reset().setRef(branch).setMode(ResetCommand.ResetType.HARD).call()
-					git.clean().setForce(true).call()
-				} else {
-					workdir.mkdirs()
-					if (isRemoteBranch(url, branch, cp)) {
-						Git git = Git.cloneRepository()
-								.setURI(url)
-								.setBranchesToClone([branch])
-								.setBranch(branch)
-								.setDirectory(workdir)
-								.setCredentialsProvider(cp)
-								.call()
-					} else {
-						Git git = Git.init()
-								.setDirectory(workdir)
-								.call()
-						new File(workdir, '.automagic').text = 'v' + Automagic.VERSION
-						git.add().addFilepattern(".").call()
-
-						git.commit()
-								.setCommitter(author, authorEmail)
-								.setMessage('initial commit').call()
-						git.branchRename().setNewName(branchName).call()
-						StoredConfig config = git.getRepository().getConfig()
-						config.setString(CONFIG_REMOTE_SECTION, "origin", "url", url)
-						config.setString(CONFIG_REMOTE_SECTION, "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
-						config.setString(CONFIG_BRANCH_SECTION, branchName, "remote", "origin");
-						config.setString(CONFIG_BRANCH_SECTION, branchName, "rebase", "false");
-						config.setString(CONFIG_BRANCH_SECTION, branchName, "merge", "refs/heads/$branchName");
-						config.save();
-						git.push().setCredentialsProvider(cp).call()
+					try {
+						Git git = new Git(new FileRepositoryBuilder()
+								.setWorkTree(workdir)
+								.build())
+						git.fetch()
+								.setRemote("origin")
+								.setRefSpecs(new RefSpec(branch))
+								.setCredentialsProvider(cp).call()
+						git.checkout().setName(branch).setForce(true).call()
+						git.reset().setRef(branch).setMode(ResetCommand.ResetType.HARD).call()
+						git.clean().setForce(true).call()
+						return
+					} catch(GitAPIException gitAPIException){
+						steps.echo gitAPIException.message
+						steps.echo "reinitialising $workdir"
+						workdir.deleteDir()
 					}
-			  }
+				}
+				workdir.mkdirs()
+				if (isRemoteBranch(url, branch, cp)) {
+					Git git = Git.cloneRepository()
+							.setURI(url)
+							.setBranchesToClone([branch])
+							.setBranch(branch)
+							.setDirectory(workdir)
+							.setCredentialsProvider(cp)
+							.call()
+				} else {
+					Git git = Git.init()
+							.setDirectory(workdir)
+							.call()
+					new File(workdir, '.automagic').text = 'v' + Automagic.VERSION
+					git.add().addFilepattern(".").call()
+
+					git.commit()
+							.setCommitter(author, authorEmail)
+							.setMessage('initial commit').call()
+					git.branchRename().setNewName(branchName).call()
+					StoredConfig config = git.getRepository().getConfig()
+					config.setString(CONFIG_REMOTE_SECTION, "origin", "url", url)
+					config.setString(CONFIG_REMOTE_SECTION, "origin", "fetch", "+refs/heads/*:refs/remotes/origin/*");
+					config.setString(CONFIG_BRANCH_SECTION, branchName, "remote", "origin");
+					config.setString(CONFIG_BRANCH_SECTION, branchName, "rebase", "false");
+					config.setString(CONFIG_BRANCH_SECTION, branchName, "merge", "refs/heads/$branchName");
+					config.save();
+					git.push().setCredentialsProvider(cp).call()
+				}
 			}
 		//}
 	}

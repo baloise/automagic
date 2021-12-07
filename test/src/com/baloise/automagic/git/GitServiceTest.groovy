@@ -89,6 +89,7 @@ class GitServiceTest {
 		try {
 			prepareRepo(remote)
 			String url = remote.toURI().toString().replaceFirst('file:', 'file://')
+			workdir.mkdirs()
 			git.checkout(url, "automagic", workdir)
 			assertFalse(txtFile.exists())
 			txtFile.text = 'Hello World ' + new Date()
