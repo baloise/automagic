@@ -16,7 +16,7 @@ automagic,com.baloise.automagic.credentials.internal,VaultCredentials._withCrede
 automagic,com.baloise.automagic.git.internal,GitImpl._commitAllAndPush_closure2,25,148,0,0,0,5,2,3,2,3
 automagic,com.baloise.automagic.git.internal,GitImpl._checkout_closure1,44,587,0,4,0,30,3,5,3,3
 automagic,com.baloise.automagic.git.internal,GitImpl,106,443,5,7,1,14,5,9,0,8
-automagic,com.baloise.automagic.magic.internal,MagicImpl,1841,5,86,0,58,0,48,1,5,1
+automagic,com.baloise.automagic.magic.internal,MagicImpl,1784,5,82,0,56,0,46,1,5,1
 automagic,com.baloise.automagic.magic.internal,MagicImpl._createDecommissionJiraTask_closure5,329,0,0,0,3,0,5,0,5,0
 automagic,com.baloise.automagic.magic.internal,MagicImpl._doMagic_closure4,68,0,0,0,1,0,4,0,4,0
 automagic,com.baloise.automagic.magic.internal,MagicImpl._doMagic_closure3,96,0,0,0,1,0,4,0,4,0

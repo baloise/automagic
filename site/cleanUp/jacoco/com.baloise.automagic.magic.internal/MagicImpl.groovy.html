@@ -22,100 +22,97 @@ class MagicImpl extends Registered implements MagicService {
 		For declarative pipelines please use 'agent none'. 
 		For scripted pipelines make sure you are not running inside a 'node(){}'.&quot;&quot;&quot;
 		
-		
-<span class="nc bnc" id="L26" title="All 4 branches missed.">		createDecommissionJiraTask(&quot;test123&quot;, &quot;b028178&quot;)</span>
-<span class="nc" id="L27">		return</span>
 		// we do the following in two loops to avoid sleeping inside the node
-<span class="nc" id="L29">		Map&lt;String, String&gt; yamls</span>
-<span class="nc" id="L30">		steps.node(''){</span>
-<span class="nc" id="L31">			steps.checkout steps.scm</span>
-<span class="nc" id="L32">			yamls = steps.findFiles(glob: '.automagic/**/*.yaml').collectEntries{[&quot;${it.path}&quot;: steps.readYaml(file: it.path)]}</span>
+<span class="nc" id="L26">		Map&lt;String, String&gt; yamls</span>
+<span class="nc" id="L27">		steps.node(''){</span>
+<span class="nc" id="L28">			steps.checkout steps.scm</span>
+<span class="nc" id="L29">			yamls = steps.findFiles(glob: '.automagic/**/*.yaml').collectEntries{[&quot;${it.path}&quot;: steps.readYaml(file: it.path)]}</span>
 		}
-<span class="nc" id="L34">		yamls.each{ name,yaml -&gt; </span>
-<span class="nc" id="L35">			doMagic(name, yaml)</span>
+<span class="nc" id="L31">		yamls.each{ name,yaml -&gt; </span>
+<span class="nc" id="L32">			doMagic(name, yaml)</span>
 		}
 	}
 	
 	def doMagic(name, yaml) {
-<span class="nc" id="L40">		steps.echo &quot;applying $name&quot; </span>
-<span class="nc" id="L41">		String ip</span>
+<span class="nc" id="L37">		steps.echo &quot;applying $name&quot; </span>
+<span class="nc" id="L38">		String ip</span>
 				
-<span class="nc" id="L43">		String ComputerName = props.get('ComputerName-'+yaml.spec.id)</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">		if(ComputerName) steps.echo &quot;ComputerName is $ComputerName&quot;</span>
+<span class="nc" id="L40">		String ComputerName = props.get('ComputerName-'+yaml.spec.id)</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">		if(ComputerName) steps.echo &quot;ComputerName is $ComputerName&quot;</span>
 	
-<span class="nc" id="L46">		def json = oim.getVMDetails(ComputerName)</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">		ip = json.Status == 'Success' ? json.Result[0].PrimaryIP : ''</span>
-<span class="nc bnc" id="L48" title="All 2 branches missed.">		if(ip) steps.echo &quot;IP is $ip&quot;</span>
+<span class="nc" id="L43">		def json = oim.getVMDetails(ComputerName)</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">		ip = json.Status == 'Success' ? json.Result[0].PrimaryIP : ''</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">		if(ip) steps.echo &quot;IP is $ip&quot;</span>
 		
-<span class="nc" id="L50">		String jiraTask = props.get('JIRA-Decommission-ID-'+ComputerName)</span>
+<span class="nc" id="L47">		String jiraTask = props.get('JIRA-Decommission-ID-'+ComputerName)</span>
 		
-<span class="nc bnc" id="L52" title="All 2 branches missed.">		if(yaml.spec.status == &quot;decommissioned&quot;) {</span>
-<span class="nc" id="L53">			steps.echo(&quot;Starting Decommissioning procedure&quot;)</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">			assert ComputerName</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">			if(jiraTask) {</span>
-<span class="nc" id="L56">				steps.error &quot;JIRA issue for decommissioning already exists: &quot; + jiraTask</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">		if(yaml.spec.status == &quot;decommissioned&quot;) {</span>
+<span class="nc" id="L50">			steps.echo(&quot;Starting Decommissioning procedure&quot;)</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">			assert ComputerName</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">			if(jiraTask) {</span>
+<span class="nc" id="L53">				steps.error &quot;JIRA issue for decommissioning already exists: &quot; + jiraTask</span>
 			}
-<span class="nc" id="L58">			steps.echo(&quot;Scheduling &quot; + ComputerName + &quot; for decommissioning.&quot;)</span>
-<span class="nc" id="L59">			createDecommissionJiraTask(ComputerName,yaml.metadata.serviceOwner)</span>
-<span class="nc" id="L60">			return</span>
+<span class="nc" id="L55">			steps.echo(&quot;Scheduling &quot; + ComputerName + &quot; for decommissioning.&quot;)</span>
+<span class="nc" id="L56">			createDecommissionJiraTask(ComputerName,yaml.metadata.serviceOwner)</span>
+<span class="nc" id="L57">			return</span>
 		}
 	
-<span class="nc bnc" id="L63" title="All 2 branches missed.">		if(yaml.spec.status == &quot;active&quot;) {</span>
-<span class="nc bnc" id="L64" title="All 2 branches missed.">			if(jiraTask) {</span>
-<span class="nc" id="L65">				steps.error &quot;JIRA issue for decommissioning exists: &quot; + jiraTask</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">		if(yaml.spec.status == &quot;active&quot;) {</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">			if(jiraTask) {</span>
+<span class="nc" id="L62">				steps.error &quot;JIRA issue for decommissioning exists: &quot; + jiraTask</span>
 			} 
-<span class="nc bnc" id="L67" title="All 22 branches missed.">			if(!ComputerName || json.Status != 'Success'){</span>
-<span class="nc" id="L68">				 steps.echo &quot;Creating VM&quot;</span>
-<span class="nc" id="L69">				 String changeNo = &quot;CR&quot;+java.util.UUID.randomUUID()</span>
-<span class="nc" id="L70">				 steps.echo &quot;changeNo = $changeNo&quot;</span>
-<span class="nc" id="L71">				 String req_body = steps.libraryResource(resource:'mycloud/createVM.json').replaceAll(&quot;&lt;changenumber&gt;&quot;, changeNo)</span>
-<span class="nc" id="L72">				 yaml.spec.each{ key, value -&gt;</span>
-<span class="nc" id="L73">				 req_body = req_body.replaceAll(&quot;&lt;$key&gt;&quot;, &quot;$value&quot;)</span>
+<span class="nc bnc" id="L64" title="All 22 branches missed.">			if(!ComputerName || json.Status != 'Success'){</span>
+<span class="nc" id="L65">				 steps.echo &quot;Creating VM&quot;</span>
+<span class="nc" id="L66">				 String changeNo = &quot;CR&quot;+java.util.UUID.randomUUID()</span>
+<span class="nc" id="L67">				 steps.echo &quot;changeNo = $changeNo&quot;</span>
+<span class="nc" id="L68">				 String req_body = steps.libraryResource(resource:'mycloud/createVM.json').replaceAll(&quot;&lt;changenumber&gt;&quot;, changeNo)</span>
+<span class="nc" id="L69">				 yaml.spec.each{ key, value -&gt;</span>
+<span class="nc" id="L70">				 req_body = req_body.replaceAll(&quot;&lt;$key&gt;&quot;, &quot;$value&quot;)</span>
 				 }
-<span class="nc" id="L75">				 json = oim.createVM(req_body)</span>
-<span class="nc bnc" id="L76" title="All 4 branches missed.">				 assert json.Status == 'Success'</span>
-<span class="nc" id="L77">				 int request_no = json.Result</span>
-<span class="nc" id="L78">				 steps.echo &quot;Request number is $request_no&quot;</span>
+<span class="nc" id="L72">				 json = oim.createVM(req_body)</span>
+<span class="nc bnc" id="L73" title="All 4 branches missed.">				 assert json.Status == 'Success'</span>
+<span class="nc" id="L74">				 int request_no = json.Result</span>
+<span class="nc" id="L75">				 steps.echo &quot;Request number is $request_no&quot;</span>
 	
 				 // All my dreams fulfil
 				 while(true) {
-<span class="nc" id="L82">					 json = oim.getRequest(request_no)</span>
-<span class="nc bnc" id="L83" title="All 4 branches missed.">					 assert json.Status == 'Success'</span>
-<span class="nc" id="L84">					 steps.echo &quot;RequestStatus = &quot; + json.Result[0].RequestStatus</span>
-<span class="nc bnc" id="L85" title="All 4 branches missed.">					 if(json.Result[0].RequestStatus == &quot;Fulfilment Completed&quot;) break</span>
-<span class="nc" id="L86">					 steps.echo &quot;sleeping 37 seconds&quot;</span>
-<span class="nc" id="L87">					 steps.sleep(37)</span>
+<span class="nc" id="L79">					 json = oim.getRequest(request_no)</span>
+<span class="nc bnc" id="L80" title="All 4 branches missed.">					 assert json.Status == 'Success'</span>
+<span class="nc" id="L81">					 steps.echo &quot;RequestStatus = &quot; + json.Result[0].RequestStatus</span>
+<span class="nc bnc" id="L82" title="All 4 branches missed.">					 if(json.Result[0].RequestStatus == &quot;Fulfilment Completed&quot;) break</span>
+<span class="nc" id="L83">					 steps.echo &quot;sleeping 37 seconds&quot;</span>
+<span class="nc" id="L84">					 steps.sleep(37)</span>
 				 }
 	
-<span class="nc" id="L90">				 json = oim.getAllCIDetails(request_no)</span>
-<span class="nc bnc" id="L91" title="All 4 branches missed.">				 assert json.Status == 'Success'</span>
-<span class="nc" id="L92">				 ip = json.Result[0].PrimaryIP</span>
-<span class="nc" id="L93">				 ComputerName = json.Result[0].ComputerName</span>
-<span class="nc" id="L94">				 steps.echo &quot;ComputerName is $ComputerName&quot;</span>
-<span class="nc" id="L95">				 steps.echo &quot;IP is $ip&quot;</span>
-<span class="nc" id="L96">				 props.put('ComputerName-'+yaml.spec.id, ComputerName)</span>
+<span class="nc" id="L87">				 json = oim.getAllCIDetails(request_no)</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">				 assert json.Status == 'Success'</span>
+<span class="nc" id="L89">				 ip = json.Result[0].PrimaryIP</span>
+<span class="nc" id="L90">				 ComputerName = json.Result[0].ComputerName</span>
+<span class="nc" id="L91">				 steps.echo &quot;ComputerName is $ComputerName&quot;</span>
+<span class="nc" id="L92">				 steps.echo &quot;IP is $ip&quot;</span>
+<span class="nc" id="L93">				 props.put('ComputerName-'+yaml.spec.id, ComputerName)</span>
 			}
-<span class="nc" id="L98">			steps.node(''){</span>
-<span class="nc" id="L99">				steps.sh &quot;ssh -o BatchMode=true -o ConnectTimeout=7 -o StrictHostKeyChecking=no $ip&quot;</span>
+<span class="nc" id="L95">			steps.node(''){</span>
+<span class="nc" id="L96">				steps.sh &quot;ssh -o BatchMode=true -o ConnectTimeout=7 -o StrictHostKeyChecking=no $ip&quot;</span>
 			}
-<span class="nc" id="L101">			return</span>
+<span class="nc" id="L98">			return</span>
 		}
-<span class="nc" id="L103">		steps.error &quot;invalid status: ${yaml.spec.status}&quot;</span>
+<span class="nc" id="L100">		steps.error &quot;invalid status: ${yaml.spec.status}&quot;</span>
 	}
 
 	
 	String createDecommissionJiraTask(String host, String serviceOwner) {
 		//TODO move this to OIM
 		// perhaps add skill-layer when clarified what to use.
-<span class="nc bnc" id="L110" title="All 26 branches missed.">		if(!host || !serviceOwner) {</span>
-<span class="nc" id="L111">			steps.error &quot;createDecommissionJiraTask: invalid arguments&quot;</span>
+<span class="nc bnc" id="L107" title="All 26 branches missed.">		if(!host || !serviceOwner) {</span>
+<span class="nc" id="L108">			steps.error &quot;createDecommissionJiraTask: invalid arguments&quot;</span>
 		}
 	
-<span class="nc" id="L114">		registry.getService(CredentialsService).withCredentials('JIRA',</span>
-<span class="nc" id="L115">			['USERNAME', 'PASSWORD']</span>
+<span class="nc" id="L111">		registry.getService(CredentialsService).withCredentials('JIRA',</span>
+<span class="nc" id="L112">			['USERNAME', 'PASSWORD']</span>
 	  ) {
 		  
-<span class="nc" id="L118">		  def res = steps.readJSON(text: steps.httpRequest(acceptType: 'APPLICATION_JSON', consoleLogResponseBody: true, contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: true, name: 'Authorization', value: 'Basic '+Base64.encoder.encodeToString(&quot;${steps.JIRA_USERNAME}:${steps.JIRA_PASSWORD}&quot;.bytes)]], httpMode: 'POST', requestBody: &quot;&quot;&quot;{</span>
+<span class="nc" id="L115">		  def res = steps.readJSON(text: steps.httpRequest(acceptType: 'APPLICATION_JSON', consoleLogResponseBody: true, contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: true, name: 'Authorization', value: 'Basic '+Base64.encoder.encodeToString(&quot;${steps.JIRA_USERNAME}:${steps.JIRA_PASSWORD}&quot;.bytes)]], httpMode: 'POST', requestBody: &quot;&quot;&quot;{</span>
      &quot;fields&quot;: {
      &quot;project&quot;: {
        &quot;id&quot;: &quot;56280&quot;
@@ -137,8 +134,8 @@ class MagicImpl extends Registered implements MagicService {
      },
      &quot;customfield_27053&quot;: &quot;Datacenter / Infrastructure&quot;
      }
-<span class="nc" id="L140">     }&quot;&quot;&quot;, url: new String(Base64.decoder.decode('aHR0cHM6Ly9qaXJhLmJhbG9pc2VuZXQuY29tL2F0bGFzc2lhbi9yZXN0L2FwaS8yL2lzc3VlLw==')), wrapAsMultipart: false).content)</span>
-<span class="nc" id="L141">				  props.put('JIRA-Decommission-ID-'+host, res.key)</span>
+<span class="nc" id="L137">     }&quot;&quot;&quot;, url: new String(Base64.decoder.decode('aHR0cHM6Ly9qaXJhLmJhbG9pc2VuZXQuY29tL2F0bGFzc2lhbi9yZXN0L2FwaS8yL2lzc3VlLw==')), wrapAsMultipart: false).content)</span>
+<span class="nc" id="L138">				  props.put('JIRA-Decommission-ID-'+host, res.key)</span>
 		  
 	  }
 	}
