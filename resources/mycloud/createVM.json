@@ -1,0 +1,91 @@
+{
+	"items": [
+		{
+			"changenumber": {
+				"key": "changenumber",
+				"value": "<changenumber>"
+			},
+			"SBUCode": {
+				"key": "SBUCode",
+				"value": "INFRA"
+			},
+			"MetalCategoryCode": {
+				"key": "MetalCategoryCode",
+				"value": "B"
+			},
+			"ServerTypeCode": {
+				"key": "ServerTypeCode",
+				"value": "INFRA"
+			},
+			"ApplicationCode": {
+				"key": "ApplicationCode",
+				"value": "MCD"
+			},			
+			"ServerRoleCode": {
+				"key": "ServerRoleCode",
+				"value": "App"
+			},
+			"ServerSizeCode": {
+				"key": "ServerSizeCode",
+				"value": "<ServerSizeCode>"
+			},
+			"CatalogName": {
+				"key": "CatalogName",
+				"value": "VL01"
+			},
+			"EnvironmentCode": {
+				"key": "EnvironmentCode",
+				"value": "Test"
+			},
+			"SecurityZoneCode": {
+				"key": "SecurityZoneCode",
+				"value": "INF"
+			},
+			"ADGroupsDetails": {
+				"key": "ADGroupsDetails",
+				"value": "adgroups"
+			},
+			
+			"StorageTypeCode": {
+				"key": "StorageTypeCode",
+				"value": "MPNM"
+			},			
+			"TagDetails": {
+				"key": "TagDetails",
+				"value": {"MCKey1":"MCValue1","MCKey2":"MCValue2"}
+			},
+			"AdditionalDrivesDetailsInGB": {
+				"key": "AdditionalDrivesDetailsInGB",
+				"value":[
+                {
+                "Size": "<DriveSize>",
+                "MountpointUser": "hcladmin",
+                "DriveName":"",
+                "DriveOrMountPoint": "/opt/app1",
+                "MountpointGroup": "hcladmin",
+                "LVName":"TestLV1",
+                "IsMountPoint":"N"
+                },
+                 {
+                "Size": "<DriveSize>",
+                "MountpointUser": "hcladmin",
+                "DriveName":"",
+                "DriveOrMountPoint": "/opt/app2",
+                "MountpointGroup": "hcladmin",
+                "LVName":"TestLV2",
+                "IsMountPoint":"N"
+                }
+                ] 
+			},
+			"CTaskID": {
+				"key": "CTaskID",
+				"value": ""
+			},
+			"itemno": 1
+		}
+	],
+	"servicecatalogid": "6",
+	"orgentityid": "ORG-F4960B51-21C2-4CAC-997C-974B15111EB6",
+	"changenumber": "<changenumber>",
+	"platformcode":"VMWAR"
+}

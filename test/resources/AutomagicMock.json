@@ -1,13 +1,17 @@
 {
 	"credentials" : { 
 		"GIT" : {
-		"USERNAME" : "automagic",
-		"PASSWORD" : "sesam"
+			"USERNAME" : "automagic",
+			"PASSWORD" : "sesam"
 		},
 		"VALUEMATION" : {
 			"USERNAME" : "automagic",
 			"PASSWORD" : "friend",
 			"ACCESS_TOKEN" : "sesam"
+		},
+		"JIRA" : {
+			"USERNAME" : "jirauser",
+			"PASSWORD" : "jirafriend"
 		}
 	},
 	"properties" : { 

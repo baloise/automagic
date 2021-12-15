@@ -72,7 +72,8 @@ class GitServiceTest {
 		Git git = Git.init()
 				.setDirectory(workdir)
 				.call()
-		Files.writeString(workdir.toPath().resolve("README"), 'Hello Unittest');
+		
+		new File(workdir,"README").text =  'Hello Unittest'
 		git.add().addFilepattern(".").call()
 
 		git.commit()
