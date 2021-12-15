@@ -22,9 +22,6 @@ class MagicImpl extends Registered implements MagicService {
 		For declarative pipelines please use 'agent none'. 
 		For scripted pipelines make sure you are not running inside a 'node(){}'."""
 		
-		
-		createDecommissionJiraTask("test123", "b028178")
-		return
 		// we do the following in two loops to avoid sleeping inside the node
 		Map<String, String> yamls
 		steps.node(''){
