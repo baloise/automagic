@@ -29,6 +29,8 @@ class ArchitectureCheck {
     private static final ArchRule ALL_INTERFACES_SHOULD_BE_NAMED_SERVICE = classes()
             .that()
             .areInterfaces()
+			.and()
+			.doNotHaveSimpleName("Constructed")
             .should()
             .haveSimpleNameEndingWith("Service");
 

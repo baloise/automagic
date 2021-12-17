@@ -7,7 +7,7 @@ import com.cloudbees.groovy.cps.NonCPS
 // and Mixins are deprecated (http://docs.groovy-lang.org/latest/html/api/groovy/lang/Mixin.html)
 abstract class Registered implements Serializable, Constructed<Registered, Object> {
 	protected Registry registry
-	protected def steps
+	protected Script steps
 	
 	@NonCPS
 	def propertyMissing(String name) { steps.getProperty(name) }

@@ -19,7 +19,7 @@ class CredentialsServiceTest {
         steps = service.steps
     }
 
-    @Test()
+    @Test(expected = MissingPropertyException)
     void getInexistant() {
         service.withCredentials("inexistant", ["nope"]){
             assertNull(steps.INEXISTANT_NOPE)

@@ -23,11 +23,11 @@ import com.datapipe.jenkins.vault.configuration.GlobalVaultConfiguration
 
 import jenkins.model.Jenkins
 
-class Registry implements Serializable, Constructed<Registry, Object> {
+class Registry implements Serializable, Constructed<Registry, Script> {
 
     Map<String, Registered> serviceRegistry = [:]
     
-    static Registry get(steps){
+    static Registry get(Script steps){
         Binding binding = steps.binding
         if(!binding.hasVariable(Registry.class.name))
             binding.setVariable(Registry.class.name, new Registry().construct(steps))
@@ -66,7 +66,7 @@ class Registry implements Serializable, Constructed<Registry, Object> {
 
 
 	@Override
-	Registry construct(Object steps) {
+	Registry construct(Script steps) {
 		registerService(GreetingService, new GreetingImpl(registry: this, steps: steps).construct())
 		registerService(GitService, new GitImpl(registry: this, steps: steps).construct())
         try {
