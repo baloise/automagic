@@ -50,7 +50,8 @@ class MagicImpl extends Registered implements MagicService {
 			echo("Starting Decommissioning procedure")
 			assert ComputerName
 			if(jiraTask) {
-				error "JIRA issue for decommissioning already exists: " + jiraTask
+				echo "JIRA issue for decommissioning already exists: " + jiraTask
+				return
 			}
 			echo("Scheduling " + ComputerName + " for decommissioning.")
 			createDecommissionJiraTask(ComputerName,yaml.metadata.serviceOwner)
