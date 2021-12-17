@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MagicImpl.groovy</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">automagic</a> &gt; <a href="index.source.html" class="el_package">com.baloise.automagic.magic.internal</a> &gt; <span class="el_source">MagicImpl.groovy</span></div><h1>MagicImpl.groovy</h1><pre class="source lang-java linenums">package com.baloise.automagic.magic.internal
+
+import com.baloise.automagic.common.Automagic
+import com.baloise.automagic.common.Registered
+import com.baloise.automagic.credentials.CredentialsService
+import com.baloise.automagic.magic.MagicService
+import com.baloise.automagic.oim.OneItMarketplaceService
+import com.baloise.automagic.properties.PropertyStoreService
+
+class MagicImpl extends Registered implements MagicService {
+
+	
+<span class="nc" id="L13">	PropertyStoreService getProps() { registry.getService(PropertyStoreService) }</span>
+<span class="nc" id="L14">	OneItMarketplaceService getOim() { registry.getService(OneItMarketplaceService)}</span>
+	
+	@Override
+	def magic() {
+<span class="nc" id="L18">		echo &quot;using automagic v&quot;+ Automagic.VERSION</span>
+		
+<span class="nc bnc" id="L20" title="All 2 branches missed.">		if(env.NODE_NAME) error &quot;&quot;&quot;Automagic is a potentially long running pipeline. </span>
+		You must not run inside a node but are running on '${env.NODE_NAME}'. 
+		For declarative pipelines please use 'agent none'. 
+		For scripted pipelines make sure you are not running inside a 'node(){}'.&quot;&quot;&quot;
+		
+		// we do the following in two loops to avoid sleeping inside the node
+<span class="nc" id="L26">		Map&lt;String, String&gt; yamls</span>
+<span class="nc" id="L27">		node(''){</span>
+<span class="nc" id="L28">			checkout scm</span>
+<span class="nc" id="L29">			yamls = findFiles(glob: '.automagic/**/*.yaml').collectEntries{[&quot;${it.path}&quot;: readYaml(file: it.path)]}</span>
+		}
+<span class="nc" id="L31">		yamls.each{ name,yaml -&gt;</span>
+<span class="nc" id="L32">			doMagic(name, yaml)</span>
+		}
+	}
+	
+	def doMagic(name, yaml) {
+<span class="nc" id="L37">		echo &quot;applying $name&quot; </span>
+<span class="nc" id="L38">		String ip</span>
+				
+<span class="nc" id="L40">		String ComputerName = props.get('ComputerName-'+yaml.spec.id)</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">		if(ComputerName) echo &quot;ComputerName is $ComputerName&quot;</span>
+	
+<span class="nc" id="L43">		def json = oim.getVMDetails(ComputerName)</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">		ip = json.Status == 'Success' ? json.Result[0].PrimaryIP : ''</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">		if(ip) echo &quot;IP is $ip&quot;</span>
+		
+<span class="nc" id="L47">		String jiraTask = props.get('JIRA-Decommission-ID-'+ComputerName)</span>
+		
+<span class="nc bnc" id="L49" title="All 2 branches missed.">		if(yaml.spec.status == &quot;decommissioned&quot;) {</span>
+<span class="nc" id="L50">			echo(&quot;Starting Decommissioning procedure&quot;)</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">			assert ComputerName</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">			if(jiraTask) {</span>
+<span class="nc" id="L53">				echo &quot;JIRA issue for decommissioning already exists: &quot; + jiraTask</span>
+<span class="nc" id="L54">				return</span>
+			}
+<span class="nc" id="L56">			echo(&quot;Scheduling &quot; + ComputerName + &quot; for decommissioning.&quot;)</span>
+<span class="nc" id="L57">			createDecommissionJiraTask(ComputerName,yaml.metadata.serviceOwner)</span>
+<span class="nc" id="L58">			return</span>
+		}
+	
+<span class="nc bnc" id="L61" title="All 2 branches missed.">		if(yaml.spec.status == &quot;active&quot;) {</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">			if(jiraTask) {</span>
+<span class="nc" id="L63">				error &quot;JIRA issue for decommissioning exists: &quot; + jiraTask</span>
+			} 
+<span class="nc bnc" id="L65" title="All 22 branches missed.">			if(!ComputerName || json.Status != 'Success'){</span>
+<span class="nc" id="L66">				 echo &quot;Creating VM&quot;</span>
+<span class="nc" id="L67">				 String changeNo = &quot;CR&quot;+java.util.UUID.randomUUID()</span>
+<span class="nc" id="L68">				 echo &quot;changeNo = $changeNo&quot;</span>
+<span class="nc" id="L69">				 String req_body = libraryResource(resource:'mycloud/createVM.json').replaceAll(&quot;&lt;changenumber&gt;&quot;, changeNo)</span>
+<span class="nc" id="L70">				 yaml.spec.each{ key, value -&gt;</span>
+<span class="nc" id="L71">				 req_body = req_body.replaceAll(&quot;&lt;$key&gt;&quot;, &quot;$value&quot;)</span>
+				 }
+<span class="nc" id="L73">				 json = oim.createVM(req_body)</span>
+<span class="nc bnc" id="L74" title="All 4 branches missed.">				 assert json.Status == 'Success'</span>
+<span class="nc" id="L75">				 int request_no = json.Result</span>
+<span class="nc" id="L76">				 echo &quot;Request number is $request_no&quot;</span>
+	
+				 // All my dreams fulfil
+				 while(true) {
+<span class="nc" id="L80">					 json = oim.getRequest(request_no)</span>
+<span class="nc bnc" id="L81" title="All 4 branches missed.">					 assert json.Status == 'Success'</span>
+<span class="nc" id="L82">					 echo &quot;RequestStatus = &quot; + json.Result[0].RequestStatus</span>
+<span class="nc bnc" id="L83" title="All 4 branches missed.">					 if(json.Result[0].RequestStatus == &quot;Fulfilment Completed&quot;) break</span>
+<span class="nc" id="L84">					 echo &quot;sleeping 37 seconds&quot;</span>
+<span class="nc" id="L85">					 sleep(37)</span>
+				 }
+	
+<span class="nc" id="L88">				 json = oim.getAllCIDetails(request_no)</span>
+<span class="nc bnc" id="L89" title="All 4 branches missed.">				 assert json.Status == 'Success'</span>
+<span class="nc" id="L90">				 ip = json.Result[0].PrimaryIP</span>
+<span class="nc" id="L91">				 ComputerName = json.Result[0].ComputerName</span>
+<span class="nc" id="L92">				 echo &quot;ComputerName is $ComputerName&quot;</span>
+<span class="nc" id="L93">				 echo &quot;IP is $ip&quot;</span>
+<span class="nc" id="L94">				 props.put('ComputerName-'+yaml.spec.id, ComputerName)</span>
+			}
+<span class="nc" id="L96">			node(''){</span>
+<span class="nc" id="L97">				sh &quot;ssh -o BatchMode=true -o ConnectTimeout=7 -o StrictHostKeyChecking=no $ip&quot;</span>
+			}
+<span class="nc" id="L99">			return</span>
+		}
+<span class="nc" id="L101">		error &quot;invalid status: ${yaml.spec.status}&quot;</span>
+	}
+
+	
+	String createDecommissionJiraTask(String host, String serviceOwner) {
+		//TODO move this to OIM
+		// perhaps add skill-layer when clarified what to use.
+<span class="nc bnc" id="L108" title="All 26 branches missed.">		if(!host || !serviceOwner) {</span>
+<span class="nc" id="L109">			error &quot;createDecommissionJiraTask: invalid arguments&quot;</span>
+		}
+	
+<span class="nc" id="L112">		registry.getService(CredentialsService).withCredentials('JIRA',</span>
+<span class="nc" id="L113">			['USERNAME', 'PASSWORD']</span>
+	  ) {
+		  
+<span class="nc" id="L116">		  def res = readJSON(text: httpRequest(acceptType: 'APPLICATION_JSON', consoleLogResponseBody: true, contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: true, name: 'Authorization', value: 'Basic '+Base64.encoder.encodeToString(&quot;${JIRA_USERNAME}:${JIRA_PASSWORD}&quot;.bytes)]], httpMode: 'POST', requestBody: &quot;&quot;&quot;{</span>
+     &quot;fields&quot;: {
+     &quot;project&quot;: {
+       &quot;id&quot;: &quot;56280&quot;
+     },
+     &quot;summary&quot;: &quot;Server Decommission of host ${host}&quot;,
+     &quot;reporter&quot;: {
+       &quot;name&quot;: &quot;${serviceOwner}&quot;
+     },
+     &quot;issuetype&quot;: {
+       &quot;id&quot;: &quot;3&quot;
+     },
+     &quot;labels&quot;: [
+     &quot;automagic&quot;,
+     &quot;hcl&quot;
+     ],
+     &quot;description&quot;: &quot;Please shutdown and decommission the host: ${host}&quot;,
+     &quot;customfield_24350&quot;: {
+       &quot;id&quot;: &quot;52620&quot;
+     },
+     &quot;customfield_27053&quot;: &quot;Datacenter / Infrastructure&quot;
+     }
+<span class="nc" id="L138">     }&quot;&quot;&quot;, url: new String(Base64.decoder.decode('aHR0cHM6Ly9qaXJhLmJhbG9pc2VuZXQuY29tL2F0bGFzc2lhbi9yZXN0L2FwaS8yL2lzc3VlLw==')), wrapAsMultipart: false).content)</span>
+<span class="nc" id="L139">				  props.put('JIRA-Decommission-ID-'+host, res.key)</span>
+		  
+	  }
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
