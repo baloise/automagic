@@ -27,6 +27,20 @@ class MockRegistry extends Registry {
         registry
     }
 	
+	static def reMap(Map inp, Map out = new HashMap()) {
+		inp.each { k,v -> out[k] = v in Map ? reMap(v) : v}
+		out
+	}
+	
+	static def reMap(List inp, List out = new ArrayList()) {
+		inp.each { v -> out += (v in Map || v in List) ? reMap(v) : v}
+		out
+	}
+	
+	static def readJSON(Map json) {
+		reMap(new groovy.json.JsonSlurper().parseText(json.text))
+	}
+	
 
     private static Map steps() {
         def steps = [:]
@@ -47,6 +61,7 @@ class MockRegistry extends Registry {
 
         steps.log = []
 
+		steps.readJSON = MockRegistry.&readJSON
         steps.env = [:]
         steps.env.BITBUCKET_URL = "https://bitbucket.balgroupit.com"
         steps.env.CHARTMUSEUM_URL = "https://charts.shapp.os1.balgroupit.com"
@@ -69,7 +84,20 @@ class MockRegistry extends Registry {
         steps.readFile = { path -> println "file read: " + path; return steps.fileSystem.readFile(path) }
         steps.fileExists = { name -> return steps.fileSystem.fileExists(name) }
         steps.sleep = { input -> steps.sleepMock.addSleep(input.time, input.unit) }
-        steps.httpRequest = { map -> return map}
+        steps.httpRequest = { 
+			map -> 
+			if(map.url) {
+				println map
+				
+				HttpURLConnection con = new URL(map.url).openConnection()
+				con.setRequestProperty("Content-Type", "application/json")
+				map.customHeaders.each{
+					con.setRequestProperty(it.name, it.value)
+				}
+				return [content : con.inputStream.text]
+			}
+			return map
+		}
         steps.binding = new Binding()
         return steps
     }

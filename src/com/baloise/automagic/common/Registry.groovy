@@ -2,22 +2,25 @@ package com.baloise.automagic.common
 
 import com.baloise.automagic.cmdb.CMDBService
 import com.baloise.automagic.cmdb.internal.ValuemationCMDB
+import com.baloise.automagic.common.internal.JenkinsProxySelector
 import com.baloise.automagic.credentials.CredentialsService
-import com.baloise.automagic.cmdb.CMDBService
-import com.baloise.automagic.cmdb.internal.ValuemationCMDB
 import com.baloise.automagic.credentials.internal.JenkinsCredentials
 import com.baloise.automagic.credentials.internal.VaultCredentials
-import com.baloise.automagic.common.internal.JenkinsProxySelector
 import com.baloise.automagic.demo.GreetingService
 import com.baloise.automagic.demo.internal.GreetingImpl
 import com.baloise.automagic.git.GitService
 import com.baloise.automagic.git.internal.GitImpl
+import com.baloise.automagic.magic.MagicService
+import com.baloise.automagic.magic.internal.MagicImpl
+import com.baloise.automagic.oim.OneItMarketplaceService
+import com.baloise.automagic.oim.internal.OneItMarketplaceImpl
 import com.baloise.automagic.properties.PropertyService
 import com.baloise.automagic.properties.PropertyStoreService
 import com.baloise.automagic.properties.internal.PropertyImpl
 import com.baloise.automagic.properties.internal.PropertyStoreImpl
 import com.cloudbees.groovy.cps.NonCPS
 import com.datapipe.jenkins.vault.configuration.GlobalVaultConfiguration
+
 import jenkins.model.Jenkins
 
 class Registry implements Serializable, Constructed<Registry, Object> {
@@ -79,7 +82,9 @@ class Registry implements Serializable, Constructed<Registry, Object> {
         }
 		registerService(PropertyService, new PropertyImpl(registry: this, steps: steps).construct())
 		registerService(PropertyStoreService, new PropertyStoreImpl(registry: this, steps: steps).construct())
-        registerService(CMDBService, new ValuemationCMDB(registry: this, steps: steps))
+        registerService(CMDBService, new ValuemationCMDB(registry: this, steps: steps).construct())
+        registerService(OneItMarketplaceService, new OneItMarketplaceImpl(registry: this, steps: steps).construct())
+        registerService(MagicService, new MagicImpl(registry: this, steps: steps).construct())
         return this
 	}
 }
