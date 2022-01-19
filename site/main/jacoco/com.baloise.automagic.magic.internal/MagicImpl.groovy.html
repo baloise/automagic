@@ -78,7 +78,7 @@ class MagicImpl extends Registered implements MagicService {
 <span class="nc" id="L78">				 yaml.spec.each{ key, value -&gt;</span>
 <span class="nc" id="L79">					 req_body = req_body.replaceAll(&quot;&lt;$key&gt;&quot;, &quot;$value&quot;)</span>
 				 }
-<span class="nc" id="L81">				 req_body.replaceAll(&quot;&lt;CatalogName&gt;&quot;, getCatalogName(yaml.spec.operatingSystem.kind)) </span>
+<span class="nc" id="L81">				 req_body = req_body.replaceAll(&quot;&lt;CatalogName&gt;&quot;, getCatalogName(yaml.spec.operatingSystem.kind)) </span>
 <span class="nc" id="L82">				 json = oim.createVM(req_body)</span>
 <span class="nc bnc" id="L83" title="All 4 branches missed.">				 assert json.Status == 'Success'</span>
 <span class="nc" id="L84">				 int request_no = json.Result as int</span>
