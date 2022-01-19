@@ -37,7 +37,7 @@ class MagicImpl extends Registered implements MagicService {
 		switch (yaml.spec.operatingSystem.kind) {
 			case 'RHEL' : return 'VL01'
 			case 'JBOSS' : return 'JBSL03'
-			default: throw new IllegalArgumentException("automagic is not aware of a catalog for "+spec.operatingSystem.kind)  
+			default: throw new IllegalArgumentException("automagic is not aware of a catalog for "+yaml.spec.operatingSystem.kind)  
 		}
 	}
 	
