@@ -33,8 +33,8 @@ class MagicImpl extends Registered implements MagicService {
 		}
 	}
 	
-	String getCatalogName(spec) {
-<span class="nc" id="L37">		switch (spec.operatingSystem.kind) {</span>
+	String getCatalogName(yaml) {
+<span class="nc" id="L37">		switch (yaml.spec.operatingSystem.kind) {</span>
 <span class="nc bnc" id="L38" title="All 2 branches missed.">			case 'RHEL' : return 'VL01'</span>
 <span class="nc bnc" id="L39" title="All 2 branches missed.">			case 'JBOSS' : return 'JBSL03'</span>
 <span class="nc" id="L40">			default: throw new IllegalArgumentException(&quot;automagic is not aware of a catalog for &quot;+spec.operatingSystem.kind)  </span>
@@ -78,7 +78,7 @@ class MagicImpl extends Registered implements MagicService {
 <span class="nc" id="L78">				 yaml.spec.each{ key, value -&gt;</span>
 <span class="nc" id="L79">					 req_body = req_body.replaceAll(&quot;&lt;$key&gt;&quot;, &quot;$value&quot;)</span>
 				 }
-<span class="nc" id="L81">				 req_body.replaceAll(&quot;&lt;CatalogName&gt;&quot;, getCatalogName(spec)) </span>
+<span class="nc" id="L81">				 req_body.replaceAll(&quot;&lt;CatalogName&gt;&quot;, getCatalogName(yaml)) </span>
 <span class="nc" id="L82">				 json = oim.createVM(req_body)</span>
 <span class="nc bnc" id="L83" title="All 4 branches missed.">				 assert json.Status == 'Success'</span>
 <span class="nc" id="L84">				 int request_no = json.Result</span>
