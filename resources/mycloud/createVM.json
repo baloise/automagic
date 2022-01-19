@@ -9,6 +9,22 @@
 				"key": "SBUCode",
 				"value": "INFRA"
 			},
+			"hdnJbossJson": {
+				"key": "hdnJbossJson",
+				"value": {
+					"jdk_version": "11",
+					"java_min_heap_size": "1300m",
+					"java_max_heap_size": "1310m",
+					"java_metaspacesize": "96M",
+					"java_max_metaspacesize": "256M",
+					"jboss_console_log_dir": "/var/log/jboss-cit",
+					"jboss_home": "/opt/jboss-cit/7.3.0",
+					"java_home": "/usr/lib/jvm/default-java",
+					"jboss_config": "standalone.xml",
+					"management_user": "Yes",
+					"jboss_management_user": "monitor"
+				}
+			},
 			"MetalCategoryCode": {
 				"key": "MetalCategoryCode",
 				"value": "B"
@@ -20,10 +36,10 @@
 			"ApplicationCode": {
 				"key": "ApplicationCode",
 				"value": "MCD"
-			},			
+			},
 			"ServerRoleCode": {
 				"key": "ServerRoleCode",
-				"value": "App"
+				"value": "APP"
 			},
 			"ServerSizeCode": {
 				"key": "ServerSizeCode",
@@ -31,11 +47,11 @@
 			},
 			"CatalogName": {
 				"key": "CatalogName",
-				"value": "VL01"
+				"value": "<CatalogName>"
 			},
 			"EnvironmentCode": {
 				"key": "EnvironmentCode",
-				"value": "Test"
+				"value": "TEST"
 			},
 			"SecurityZoneCode": {
 				"key": "SecurityZoneCode",
@@ -43,43 +59,41 @@
 			},
 			"ADGroupsDetails": {
 				"key": "ADGroupsDetails",
-				"value": "adgroups"
+				"value": "ADGroupName"
 			},
-			
 			"StorageTypeCode": {
 				"key": "StorageTypeCode",
 				"value": "MPNM"
-			},			
+			},
 			"TagDetails": {
 				"key": "TagDetails",
-				"value": {"MCKey1":"MCValue1","MCKey2":"MCValue2"}
+				"value": {
+					"MCKey1": "MCValue1",
+					"MCKey2": "MCValue2"
+				}
 			},
 			"AdditionalDrivesDetailsInGB": {
 				"key": "AdditionalDrivesDetailsInGB",
-				"value":[
-                {
-                "Size": "<DriveSize>",
-                "MountpointUser": "hcladmin",
-                "DriveName":"",
-                "DriveOrMountPoint": "/opt/app1",
-                "MountpointGroup": "hcladmin",
-                "LVName":"TestLV1",
-                "IsMountPoint":"N"
-                },
-                 {
-                "Size": "<DriveSize>",
-                "MountpointUser": "hcladmin",
-                "DriveName":"",
-                "DriveOrMountPoint": "/opt/app2",
-                "MountpointGroup": "hcladmin",
-                "LVName":"TestLV2",
-                "IsMountPoint":"N"
-                }
-                ] 
-			},
-			"CTaskID": {
-				"key": "CTaskID",
-				"value": ""
+				"value": [
+					{
+                		"Size": "<DriveSize>",
+						"MountpointUser": "hcladmin",
+						"DriveName": "",
+						"DriveOrMountPoint": "/opt/app1",
+						"MountpointGroup": "hcladmin",
+						"LVName": "TestLV1",
+						"IsMountPoint": "N"
+					},
+					{
+                		"Size": "<DriveSize>",
+						"MountpointUser": "hcladmin",
+						"DriveName": "",
+						"DriveOrMountPoint": "/opt/app2",
+						"MountpointGroup": "hcladmin",
+						"LVName": "TestLV2",
+						"IsMountPoint": "N"
+					}
+				]
 			},
 			"itemno": 1
 		}
@@ -87,5 +101,5 @@
 	"servicecatalogid": "6",
 	"orgentityid": "ORG-F4960B51-21C2-4CAC-997C-974B15111EB6",
 	"changenumber": "<changenumber>",
-	"platformcode":"VMWAR"
+	"platformcode": "VMWAR"
 }

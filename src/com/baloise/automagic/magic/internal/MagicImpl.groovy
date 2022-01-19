@@ -33,6 +33,14 @@ class MagicImpl extends Registered implements MagicService {
 		}
 	}
 	
+	String getCatalogName(spec) {
+		switch (spec.operatingSystem.kind) {
+			case 'RHEL' : return 'VL01'
+			case 'JBOSS' : return 'JBSL03'
+			default: throw new IllegalArgumentException("automagic is not aware of a catalog for "+spec.operatingSystem.kind)  
+		}
+	}
+	
 	def doMagic(name, yaml) {
 		echo "applying $name" 
 		String ip
@@ -68,8 +76,9 @@ class MagicImpl extends Registered implements MagicService {
 				 echo "changeNo = $changeNo"
 				 String req_body = libraryResource(resource:'mycloud/createVM.json').replaceAll("<changenumber>", changeNo)
 				 yaml.spec.each{ key, value ->
-				 req_body = req_body.replaceAll("<$key>", "$value")
+					 req_body = req_body.replaceAll("<$key>", "$value")
 				 }
+				 req_body.replaceAll("<CatalogName>", getCatalogName(spec)) 
 				 json = oim.createVM(req_body)
 				 assert json.Status == 'Success'
 				 int request_no = json.Result
