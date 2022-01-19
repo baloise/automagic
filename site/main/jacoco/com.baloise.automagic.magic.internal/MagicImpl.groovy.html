@@ -34,10 +34,10 @@ class MagicImpl extends Registered implements MagicService {
 	}
 	
 	String getCatalogName(kind) {
-<span class="nc" id="L37">		switch (kind) {</span>
-<span class="nc bnc" id="L38" title="All 2 branches missed.">			case 'RHEL' : return 'VL01'</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">			case 'JBOSS' : return 'JBSL03'</span>
-<span class="nc" id="L40">			default: throw new IllegalArgumentException(&quot;automagic is not aware of a catalog for &quot;+kind)  </span>
+<span class="fc" id="L37">		switch (kind) {</span>
+<span class="pc bfc" id="L38" title="All 2 branches covered.">			case 'RHEL' : return 'VL01'</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">			case 'JBOSS' : return 'JBSL03'</span>
+<span class="pc" id="L40">			default: throw new IllegalArgumentException(&quot;automagic is not aware of a catalog for &quot;+kind)  </span>
 		}
 	}
 	
