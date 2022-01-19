@@ -59,7 +59,7 @@
 			},
 			"ADGroupsDetails": {
 				"key": "ADGroupsDetails",
-				"value": "ADGroupName"
+				"value": "<ADGroupName>"
 			},
 			"StorageTypeCode": {
 				"key": "StorageTypeCode",
@@ -77,19 +77,19 @@
 				"value": [
 					{
                 		"Size": "<DriveSize>",
-						"MountpointUser": "hcladmin",
+						"MountpointUser": "<MountpointUser>",
 						"DriveName": "",
 						"DriveOrMountPoint": "/opt/app1",
-						"MountpointGroup": "hcladmin",
+						"MountpointGroup": "<ADGroupName>@balgroupit.com",
 						"LVName": "TestLV1",
 						"IsMountPoint": "N"
 					},
 					{
                 		"Size": "<DriveSize>",
-						"MountpointUser": "hcladmin",
+						"MountpointUser": "<MountpointUser>",
 						"DriveName": "",
 						"DriveOrMountPoint": "/opt/app2",
-						"MountpointGroup": "hcladmin",
+						"MountpointGroup": "<ADGroupName>@balgroupit.com",
 						"LVName": "TestLV2",
 						"IsMountPoint": "N"
 					}
