@@ -78,7 +78,7 @@ class MagicImpl extends Registered implements MagicService {
 				 yaml.spec.each{ key, value ->
 					 req_body = req_body.replaceAll("<$key>", "$value")
 				 }
-				 req_body.replaceAll("<CatalogName>", getCatalogName(yaml.spec.operatingSystem.kind)) 
+				 req_body = req_body.replaceAll("<CatalogName>", getCatalogName(yaml.spec.operatingSystem.kind)) 
 				 json = oim.createVM(req_body)
 				 assert json.Status == 'Success'
 				 int request_no = json.Result as int
