@@ -33,8 +33,8 @@ class MagicImpl extends Registered implements MagicService {
 		}
 	}
 	
-	String getCatalogName(spec) {
-		switch (spec.operatingSystem.kind) {
+	String getCatalogName(yaml) {
+		switch (yaml.spec.operatingSystem.kind) {
 			case 'RHEL' : return 'VL01'
 			case 'JBOSS' : return 'JBSL03'
 			default: throw new IllegalArgumentException("automagic is not aware of a catalog for "+spec.operatingSystem.kind)  
@@ -78,7 +78,7 @@ class MagicImpl extends Registered implements MagicService {
 				 yaml.spec.each{ key, value ->
 					 req_body = req_body.replaceAll("<$key>", "$value")
 				 }
-				 req_body.replaceAll("<CatalogName>", getCatalogName(spec)) 
+				 req_body.replaceAll("<CatalogName>", getCatalogName(yaml)) 
 				 json = oim.createVM(req_body)
 				 assert json.Status == 'Success'
 				 int request_no = json.Result
