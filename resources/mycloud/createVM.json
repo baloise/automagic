@@ -7,7 +7,7 @@
 			},
 			"SBUCode": {
 				"key": "SBUCode",
-				"value": "INFRA"
+				"value": "CH-BCH"
 			},
 			"hdnJbossJson": {
 				"key": "hdnJbossJson",
@@ -31,11 +31,11 @@
 			},
 			"ServerTypeCode": {
 				"key": "ServerTypeCode",
-				"value": "INFRA"
+				"value": "BUS"
 			},
 			"ApplicationCode": {
 				"key": "ApplicationCode",
-				"value": "MCD"
+				"value": "JBSS"
 			},
 			"ServerRoleCode": {
 				"key": "ServerRoleCode",
@@ -55,7 +55,7 @@
 			},
 			"SecurityZoneCode": {
 				"key": "SecurityZoneCode",
-				"value": "INF"
+				"value": "NPROD"
 			},
 			"ADGroupsDetails": {
 				"key": "ADGroupsDetails",
