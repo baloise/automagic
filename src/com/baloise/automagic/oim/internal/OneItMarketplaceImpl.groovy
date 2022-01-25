@@ -1,6 +1,7 @@
 package com.baloise.automagic.oim.internal
 
 import com.baloise.automagic.common.Registered
+import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.oim.OneItMarketplaceService
 
 class OneItMarketplaceImpl extends Registered implements OneItMarketplaceService {
