@@ -23,7 +23,7 @@ class VaultCredentials extends Registered implements CredentialsService {
 
 	@Override
 	public void setCredentials(String scope, Map<String, String> keyValues) {
-		httpRequest customHeaders: [[maskValue: true, name: 'X-Vault-Token', value: vaultToken]], httpMode: 'POST', requestBody:toJson([data:keyValues]), url: "${vaultUrl}/v1/secret/data/${scope}"
+		steps.httpRequest(customHeaders: [[maskValue: true, name: 'X-Vault-Token', value: vaultToken]], httpMode: 'POST', requestBody:toJson([data:keyValues]), url: "${vaultUrl}/v1/secret/data/${scope}")
 	}
 	
 	
