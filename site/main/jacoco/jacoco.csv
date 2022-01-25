@@ -2,7 +2,7 @@ GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_
 automagic,com.baloise.automagic.cmdb.internal,ValuemationCMDB._buildJSON_closure1,145,0,0,0,1,0,5,0,5,0
 automagic,com.baloise.automagic.cmdb.internal,ValuemationCMDB,1035,5,42,0,24,0,31,1,10,1
 automagic,com.baloise.automagic.common.internal,JenkinsProxySelector,66,0,0,0,3,0,4,0,4,0
-automagic,com.baloise.automagic.oim.internal,OneItMarketplaceImpl,577,53,10,0,15,2,17,1,12,1
+automagic,com.baloise.automagic.oim.internal,OneItMarketplaceImpl,573,53,10,0,15,2,17,1,12,1
 automagic,com.baloise.automagic.oim.internal,OneItMarketplaceImpl._decodePassword_closure1,103,0,0,0,1,0,4,0,4,0
 automagic,com.baloise.automagic.common,Automagic,14,7,0,0,0,0,1,1,1,1
 automagic,com.baloise.automagic.common,Registry,299,354,8,0,13,13,10,4,6,4

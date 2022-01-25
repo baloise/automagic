@@ -1,62 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OneItMarketplaceImpl.groovy</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">automagic</a> &gt; <a href="index.source.html" class="el_package">com.baloise.automagic.oim.internal</a> &gt; <span class="el_source">OneItMarketplaceImpl.groovy</span></div><h1>OneItMarketplaceImpl.groovy</h1><pre class="source lang-java linenums">package com.baloise.automagic.oim.internal
 
 import com.baloise.automagic.common.Registered
+import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.oim.OneItMarketplaceService
 
 class OneItMarketplaceImpl extends Registered implements OneItMarketplaceService {
 
-<span class="fc" id="L8">	String MYC_URL_BASE = new String(Base64.decoder.decode('aHR0cHM6Ly9teWNsb3VkLXFhLmJhbGdyb3VwaXQuY29tL1dlYkFQSQ=='))</span>
-<span class="fc" id="L9">	String OrgEntityId =  new String(Base64.decoder.decode('T1JHLUY0OTYwQjUxLTIxQzItNENBQy05OTdDLTk3NEIxNTExMUVCNg=='))</span>
+<span class="fc" id="L9">	String MYC_URL_BASE = new String(Base64.decoder.decode('aHR0cHM6Ly9teWNsb3VkLXFhLmJhbGdyb3VwaXQuY29tL1dlYkFQSQ=='))</span>
+<span class="fc" id="L10">	String OrgEntityId =  new String(Base64.decoder.decode('T1JHLUY0OTYwQjUxLTIxQzItNENBQy05OTdDLTk3NEIxNTExMUVCNg=='))</span>
 	
 	String getToken() {
-<span class="nc" id="L12">		steps.httpRequest(url:  new String(Base64.decoder.decode('aHR0cHM6Ly9vaW0tYXBpLWJpemRldm9wcy1ub24tcHJvZC5hcHBzLmNhYXNkMDEuYmFsZ3JvdXBpdC5jb20vb2MvdjAuMS90ZXN0L2dldHRva2Vu'))).content</span>
+<span class="nc" id="L13">		steps.httpRequest(url:  new String(Base64.decoder.decode('aHR0cHM6Ly9vaW0tYXBpLWJpemRldm9wcy1ub24tcHJvZC5hcHBzLmNhYXNkMDEuYmFsZ3JvdXBpdC5jb20vb2MvdjAuMS90ZXN0L2dldHRva2Vu'))).content</span>
 	}
 	
 	String myCloud(String url, String body='') {
-<span class="nc" id="L16">		boolean ignoreSslErrors = true</span>
-<span class="nc" id="L17">		boolean consoleLogResponseBody = false</span>
+<span class="nc" id="L17">		boolean ignoreSslErrors = true</span>
+<span class="nc" id="L18">		boolean consoleLogResponseBody = false</span>
 	
-<span class="nc" id="L19">		Map params = [</span>
+<span class="nc" id="L20">		Map params = [</span>
 				consoleLogResponseBody: consoleLogResponseBody,
 				contentType: 'APPLICATION_JSON',
-<span class="nc" id="L22">				customHeaders:  [</span>
-<span class="nc" id="L23">					[maskValue: true, name: 'Authorization', value: 'Bearer '+token],</span>
+<span class="nc" id="L23">				customHeaders:  [</span>
+<span class="nc" id="L24">					[maskValue: true, name: 'Authorization', value: 'Bearer '+token],</span>
 					[maskValue: false, name: 'Offset', value: '-120']
 				],
-<span class="nc bnc" id="L26" title="All 2 branches missed.">				httpMode: (body? 'POST' : 'GET'),</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">				httpMode: (body? 'POST' : 'GET'),</span>
 				ignoreSslErrors: ignoreSslErrors,
 				url: url,
 				wrapAsMultipart: false]
-<span class="nc bnc" id="L30" title="All 2 branches missed.">		if(body) params.requestBody = body</span>
-<span class="nc" id="L31">		steps.httpRequest(params).content</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">		if(body) params.requestBody = body</span>
+<span class="nc" id="L32">		steps.httpRequest(params).content</span>
 	}
 	
 	@Override
 	public def getAllCIDetails(int requestNo) {
-<span class="nc" id="L36">		return  steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetAllCIDetails/OrgEntityId/${OrgEntityId}/?datafilter=RequestNo=%27${requestNo}%27&quot;))</span>
+<span class="nc" id="L37">		return  steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetAllCIDetails/OrgEntityId/${OrgEntityId}/?datafilter=RequestNo=%27${requestNo}%27&quot;))</span>
 	}
 	
 	
 	@Override
 	public def getRequest(int requestNo) {
-<span class="nc" id="L42">		steps.readJSON(text :  myCloud(&quot;${MYC_URL_BASE}/V2/Requests/${OrgEntityId}/RequestNo/${requestNo}/ItemNo/1&quot;))</span>
+<span class="nc" id="L43">		steps.readJSON(text :  myCloud(&quot;${MYC_URL_BASE}/V2/Requests/${OrgEntityId}/RequestNo/${requestNo}/ItemNo/1&quot;))</span>
 	}
 	
 	@Override
 	public def createVM(String jsonBody) {
-<span class="nc" id="L47">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/GenericScripts/Execute/OrgEntityId/${OrgEntityId}/ScriptID/16&quot;,jsonBody))</span>
+<span class="nc" id="L48">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/GenericScripts/Execute/OrgEntityId/${OrgEntityId}/ScriptID/16&quot;,jsonBody))</span>
 	}
 	
 	@Override
 	public def getVMDetails(String ObjectID) {
-<span class="nc" id="L52">		println ObjectID</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetCIMasterData/ObjectId/${ObjectID?:'NONE'}/ObjectType/VM&quot;))</span>
+<span class="nc" id="L53">		println ObjectID</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetCIMasterData/ObjectId/${ObjectID?:'NONE'}/ObjectType/VM&quot;))</span>
 	}
 
 	@Override
 	public String decodePassword(String encodedPassword) {
-<span class="nc" id="L58">		registry.getService(CredentialsService).withCredentials('JBOSS_MANAGEMENT_PRESHARED_KEY',['KEY']) {</span>
-<span class="nc" id="L59">			return sh( returnStdout: true, script: &quot;echo ${encodedPassword} | openssl enc -aes-256-cbc -md sha512 -pbkdf2 -salt -a -d -pass pass:${steps.JBOSS_MANAGEMENT_PRESHARED_KEY_KEY}&quot;).trim()</span>
+<span class="nc" id="L59">		registry.getService(CredentialsService).withCredentials('JBOSS_MANAGEMENT_PRESHARED_KEY',['KEY']) {</span>
+<span class="nc" id="L60">			return sh( returnStdout: true, script: &quot;echo ${encodedPassword} | openssl enc -aes-256-cbc -md sha512 -pbkdf2 -salt -a -d -pass pass:${steps.JBOSS_MANAGEMENT_PRESHARED_KEY_KEY}&quot;).trim()</span>
 		}
 	}
 }
