@@ -10,7 +10,7 @@ automagic,com.baloise.automagic.common,Registered,68,35,1,1,3,1,7,5,6,5
 automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl._put_closure1,41,0,0,0,1,0,3,0,3,0
 automagic,com.baloise.automagic.properties.internal,PropertyImpl,41,5,0,0,1,0,1,1,1,1
 automagic,com.baloise.automagic.properties.internal,PropertyStoreImpl,374,37,8,2,18,2,18,3,14,2
-automagic,com.baloise.automagic.credentials.internal,VaultCredentials,266,0,0,0,5,0,5,0,5,0
+automagic,com.baloise.automagic.credentials.internal,VaultCredentials,275,0,0,0,5,0,5,0,5,0
 automagic,com.baloise.automagic.credentials.internal,VaultCredentials._getVaultToken_closure2,29,0,0,0,1,0,3,0,3,0
 automagic,com.baloise.automagic.credentials.internal,JenkinsCredentials,43,5,0,0,3,0,2,1,2,1
 automagic,com.baloise.automagic.credentials.internal,JenkinsCredentials._withCredentials_closure1,118,0,0,0,1,0,3,0,3,0
