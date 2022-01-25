@@ -103,8 +103,9 @@ class MagicImpl extends Registered implements MagicService {
 				 echo "IP is $ip"
 				 String encodedPassword = json.Result[0].CustomField11
 				 echo "decoding and storing ${encodedPassword}" 
-				 creds.setCredentials("JBOSS", ["${ComputerName.toUpperCase()}": oim.decodePassword(encodedPassword)])
-				 
+				 node(''){
+					 creds.setCredentials("JBOSS", ["${ComputerName.toUpperCase()}": oim.decodePassword(encodedPassword)])
+				 }
 				 props.put('ComputerName-'+yaml.spec.id, ComputerName)
 			}
 			node(''){
