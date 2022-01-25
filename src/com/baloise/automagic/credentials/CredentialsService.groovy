@@ -1,6 +1,5 @@
 package com.baloise.automagic.credentials
 
-import com.cloudbees.plugins.credentials.common.UsernamePasswordCredentials
 
 import javax.annotation.CheckForNull
 
@@ -10,4 +9,5 @@ import javax.annotation.CheckForNull
 interface CredentialsService {
     @CheckForNull
     <T> T withCredentials(String scope, List<String> keys, Closure<T> action)
+    void setCredentials(String scope, Map<String, String> keyValues)
 }

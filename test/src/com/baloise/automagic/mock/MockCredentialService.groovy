@@ -11,4 +11,9 @@ class MockCredentialService implements CredentialsService{
         if(tmp) tmp.each {k,v->action.steps["${credentialId}_${k}"]=v}
         action()
     }
+	
+	@Override
+	public void setCredentials(String scope, Map<String, String> keyValues) {
+		credentials.scope.putAll(keyValues)	
+	}
 }

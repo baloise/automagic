@@ -7,4 +7,5 @@ interface OneItMarketplaceService {
 	def getVMDetails(String ObjectID)
 	def getRequest(int requestNo)
 	def createVM(String jsonBody)
+	String decodePassword(String encodedPassword)
 }

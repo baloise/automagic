@@ -12,6 +12,7 @@ class MagicImpl extends Registered implements MagicService {
 	
 	PropertyStoreService getProps() { registry.getService(PropertyStoreService) }
 	OneItMarketplaceService getOim() { registry.getService(OneItMarketplaceService)}
+	CredentialsService getCreds() { registry.getService(CredentialsService)}
 	
 	@Override
 	def magic() {
@@ -100,6 +101,10 @@ class MagicImpl extends Registered implements MagicService {
 				 ComputerName = json.Result[0].ComputerName
 				 echo "ComputerName is $ComputerName"
 				 echo "IP is $ip"
+				 String encodedPassword = json.Result[0].CustomField11
+				 echo "decoding and storing ${encodedPassword}" 
+				 creds.setCredentials("JBOSS", ["${ComputerName}", oim.decodePassword(encodedPassword)])
+				 
 				 props.put('ComputerName-'+yaml.spec.id, ComputerName)
 			}
 			node(''){
@@ -118,7 +123,7 @@ class MagicImpl extends Registered implements MagicService {
 			error "createDecommissionJiraTask: invalid arguments"
 		}
 	
-		registry.getService(CredentialsService).withCredentials('JIRA',
+		creds.withCredentials('JIRA',
 			['USERNAME', 'PASSWORD']
 	  ) {
 		  

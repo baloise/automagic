@@ -52,4 +52,11 @@ class OneItMarketplaceImpl extends Registered implements OneItMarketplaceService
 		println ObjectID
 		steps.readJSON(text : myCloud("${MYC_URL_BASE}/V2/CI/GetCIMasterData/ObjectId/${ObjectID?:'NONE'}/ObjectType/VM"))
 	}
+
+	@Override
+	public String decodePassword(String encodedPassword) {
+		registry.getService(CredentialsService).withCredentials('JBOSS_MANAGEMENT_PRESHARED_KEY',['KEY']) {
+			return sh( returnStdout: true, script: "echo ${encodedPassword} | openssl enc -aes-256-cbc -md sha512 -pbkdf2 -salt -a -d -pass pass:${steps.JBOSS_MANAGEMENT_PRESHARED_KEY_KEY}").trim()
+		}
+	}
 }

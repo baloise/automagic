@@ -20,4 +20,9 @@ class JenkinsCredentials extends Registered implements CredentialsService {
 				action
 			)
     }
+
+	@Override
+	public void setCredentials(String scope, Map<String, String> keyValues) {
+		throw new UnsupportedOperationException("Not yet implemented")
+	}
 }
