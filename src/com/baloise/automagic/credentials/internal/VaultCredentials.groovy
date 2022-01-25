@@ -27,7 +27,7 @@ class VaultCredentials extends Registered implements CredentialsService {
 	}
 	
 	
-	private String getVaultToken(){	withCredentials('VAULT"', ['TOKEN']) { steps.VAULT_TOKEN  }}
+	private String getVaultToken(){	withCredentials('VAULT', ['TOKEN']) { steps.VAULT_TOKEN  }}
 	
 	private String getVaultUrl() {GlobalVaultConfiguration.get().configuration.vaultUrl}
 	
