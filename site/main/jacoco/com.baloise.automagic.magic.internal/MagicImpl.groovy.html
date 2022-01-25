@@ -103,31 +103,32 @@ class MagicImpl extends Registered implements MagicService {
 <span class="nc" id="L103">				 echo &quot;IP is $ip&quot;</span>
 <span class="nc" id="L104">				 String encodedPassword = json.Result[0].CustomField11</span>
 <span class="nc" id="L105">				 echo &quot;decoding and storing ${encodedPassword}&quot; </span>
-<span class="nc" id="L106">				 creds.setCredentials(&quot;JBOSS&quot;, [&quot;${ComputerName.toUpperCase()}&quot;: oim.decodePassword(encodedPassword)])</span>
-				 
-<span class="nc" id="L108">				 props.put('ComputerName-'+yaml.spec.id, ComputerName)</span>
+<span class="nc" id="L106">				 node(''){</span>
+<span class="nc" id="L107">					 creds.setCredentials(&quot;JBOSS&quot;, [&quot;${ComputerName.toUpperCase()}&quot;: oim.decodePassword(encodedPassword)])</span>
+				 }
+<span class="nc" id="L109">				 props.put('ComputerName-'+yaml.spec.id, ComputerName)</span>
 			}
-<span class="nc" id="L110">			node(''){</span>
-<span class="nc" id="L111">				sh &quot;ssh -o BatchMode=true -o ConnectTimeout=7 -o StrictHostKeyChecking=no $ip&quot;</span>
+<span class="nc" id="L111">			node(''){</span>
+<span class="nc" id="L112">				sh &quot;ssh -o BatchMode=true -o ConnectTimeout=7 -o StrictHostKeyChecking=no $ip&quot;</span>
 			}
-<span class="nc" id="L113">			return</span>
+<span class="nc" id="L114">			return</span>
 		}
-<span class="nc" id="L115">		error &quot;invalid status: ${yaml.spec.status}&quot;</span>
+<span class="nc" id="L116">		error &quot;invalid status: ${yaml.spec.status}&quot;</span>
 	}
 
 	
 	String createDecommissionJiraTask(String host, String serviceOwner) {
 		//TODO move this to OIM
 		// perhaps add skill-layer when clarified what to use.
-<span class="nc bnc" id="L122" title="All 26 branches missed.">		if(!host || !serviceOwner) {</span>
-<span class="nc" id="L123">			error &quot;createDecommissionJiraTask: invalid arguments&quot;</span>
+<span class="nc bnc" id="L123" title="All 26 branches missed.">		if(!host || !serviceOwner) {</span>
+<span class="nc" id="L124">			error &quot;createDecommissionJiraTask: invalid arguments&quot;</span>
 		}
 	
-<span class="nc" id="L126">		creds.withCredentials('JIRA',</span>
-<span class="nc" id="L127">			['USERNAME', 'PASSWORD']</span>
+<span class="nc" id="L127">		creds.withCredentials('JIRA',</span>
+<span class="nc" id="L128">			['USERNAME', 'PASSWORD']</span>
 	  ) {
 		  
-<span class="nc" id="L130">		  def res = readJSON(text: httpRequest(acceptType: 'APPLICATION_JSON', consoleLogResponseBody: true, contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: true, name: 'Authorization', value: 'Basic '+Base64.encoder.encodeToString(&quot;${JIRA_USERNAME}:${JIRA_PASSWORD}&quot;.bytes)]], httpMode: 'POST', requestBody: &quot;&quot;&quot;{</span>
+<span class="nc" id="L131">		  def res = readJSON(text: httpRequest(acceptType: 'APPLICATION_JSON', consoleLogResponseBody: true, contentType: 'APPLICATION_JSON', customHeaders: [[maskValue: true, name: 'Authorization', value: 'Basic '+Base64.encoder.encodeToString(&quot;${JIRA_USERNAME}:${JIRA_PASSWORD}&quot;.bytes)]], httpMode: 'POST', requestBody: &quot;&quot;&quot;{</span>
      &quot;fields&quot;: {
      &quot;project&quot;: {
        &quot;id&quot;: &quot;56280&quot;
@@ -149,8 +150,8 @@ class MagicImpl extends Registered implements MagicService {
      },
      &quot;customfield_27053&quot;: &quot;Datacenter / Infrastructure&quot;
      }
-<span class="nc" id="L152">     }&quot;&quot;&quot;, url: new String(Base64.decoder.decode('aHR0cHM6Ly9qaXJhLmJhbG9pc2VuZXQuY29tL2F0bGFzc2lhbi9yZXN0L2FwaS8yL2lzc3VlLw==')), wrapAsMultipart: false).content)</span>
-<span class="nc" id="L153">				  props.put('JIRA-Decommission-ID-'+host, res.key)</span>
+<span class="nc" id="L153">     }&quot;&quot;&quot;, url: new String(Base64.decoder.decode('aHR0cHM6Ly9qaXJhLmJhbG9pc2VuZXQuY29tL2F0bGFzc2lhbi9yZXN0L2FwaS8yL2lzc3VlLw==')), wrapAsMultipart: false).content)</span>
+<span class="nc" id="L154">				  props.put('JIRA-Decommission-ID-'+host, res.key)</span>
 		  
 	  }
 	}
