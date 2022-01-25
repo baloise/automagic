@@ -52,5 +52,12 @@ class OneItMarketplaceImpl extends Registered implements OneItMarketplaceService
 <span class="nc" id="L52">		println ObjectID</span>
 <span class="nc bnc" id="L53" title="All 2 branches missed.">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetCIMasterData/ObjectId/${ObjectID?:'NONE'}/ObjectType/VM&quot;))</span>
 	}
+
+	@Override
+	public String decodePassword(String encodedPassword) {
+<span class="nc" id="L58">		registry.getService(CredentialsService).withCredentials('JBOSS_MANAGEMENT_PRESHARED_KEY',['KEY']) {</span>
+<span class="nc" id="L59">			return sh( returnStdout: true, script: &quot;echo ${encodedPassword} | openssl enc -aes-256-cbc -md sha512 -pbkdf2 -salt -a -d -pass pass:${steps.JBOSS_MANAGEMENT_PRESHARED_KEY_KEY}&quot;).trim()</span>
+		}
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
