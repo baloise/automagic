@@ -32,7 +32,6 @@ class OneItMarketplaceServiceTest {
 	@Ignore
 	void getVMDetails_myctt62() {
 		def details = oim.getVMDetails("mcl-mcdt632")
-		println details
 		assertEquals("Success", details.Status)		
 		assertEquals(279, details.Result[0].RequestNo)
 	}
