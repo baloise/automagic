@@ -30,7 +30,9 @@ class MagicImpl extends Registered implements MagicService {
 			yamls = findFiles(glob: '.automagic/**/*.yaml').collectEntries{["${it.path}": readYaml(file: it.path)]}
 		}
 		yamls.each{ name,yaml ->
-			doMagic(name, yaml)
+			yamls.specs.each{spec -> 
+				doMagic(name, yaml, spec)
+			}
 		}
 	}
 	
@@ -42,11 +44,11 @@ class MagicImpl extends Registered implements MagicService {
 		}
 	}
 	
-	def doMagic(name, yaml) {
+	def doMagic(name, yaml, spec) {
 		echo "applying $name" 
 		String ip
 				
-		String ComputerName = props.get('ComputerName-'+yaml.spec.id)
+		String ComputerName = props.get('ComputerName-'+spec.id)
 		if(ComputerName) echo "ComputerName is $ComputerName"
 	
 		def json = oim.getVMDetails(ComputerName)
@@ -55,7 +57,7 @@ class MagicImpl extends Registered implements MagicService {
 		
 		String jiraTask = props.get('JIRA-Decommission-ID-'+ComputerName)
 		
-		if(yaml.spec.status == "decommissioned") {
+		if(spec.status == "decommissioned") {
 			echo("Starting Decommissioning procedure")
 			assert ComputerName
 			if(jiraTask) {
@@ -67,7 +69,7 @@ class MagicImpl extends Registered implements MagicService {
 			return
 		}
 	
-		if(yaml.spec.status == "active") {
+		if(spec.status == "active") {
 			if(jiraTask) {
 				error "JIRA issue for decommissioning exists: " + jiraTask
 			} 
@@ -75,11 +77,14 @@ class MagicImpl extends Registered implements MagicService {
 				 echo "Creating VM"
 				 String changeNo = "CR"+java.util.UUID.randomUUID()
 				 echo "changeNo = $changeNo"
+				 
+				 // TODO merge the jsons and use proper templating anb logic , i.e. calculate DB drive sizes
+				 String jsonTemplateName = spec.catalogItem == 'POSTGRESQL' ? 'postgresql.json' : 'createVM.json'
 				 String req_body = libraryResource(resource:'mycloud/createVM.json').replaceAll("<changenumber>", changeNo)
-				 yaml.spec.each{ key, value ->
+				 spec.each{ key, value ->
 					 req_body = req_body.replaceAll("<$key>", "$value")
 				 }
-				 req_body = req_body.replaceAll("<CatalogName>", getCatalogName(yaml.spec.operatingSystem.kind)) 
+				 req_body = req_body.replaceAll("<CatalogName>", getCatalogName(spec.catalogItem)) 
 				 json = oim.createVM(req_body)
 				 assert json.Status == 'Success'
 				 int request_no = json.Result as int
@@ -106,14 +111,19 @@ class MagicImpl extends Registered implements MagicService {
 				 node(''){
 					 creds.setCredentials("JBOSS", ["${ComputerName.toUpperCase()}": oim.decodePassword(encodedPassword)])
 				 }
-				 props.put('ComputerName-'+yaml.spec.id, ComputerName)
+				 props.put('ComputerName-'+spec.id, ComputerName)
+				 if(spec.catalogItem == 'POSTGRESQL') {
+					 String dbName = json.Result[0].CustomField12 +json.Result[0].CustomField13
+					 props.put('DataBaseName-'+spec.id, dbName)
+				 }
 			}
 			node(''){
+				
 				sh "ssh -o BatchMode=true -o ConnectTimeout=7 -o StrictHostKeyChecking=no $ip"
 			}
 			return
 		}
-		error "invalid status: ${yaml.spec.status}"
+		error "invalid status: ${spec.status}"
 	}
 
 	
