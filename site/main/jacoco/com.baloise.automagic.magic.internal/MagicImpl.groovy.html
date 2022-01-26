@@ -30,7 +30,7 @@ class MagicImpl extends Registered implements MagicService {
 <span class="nc" id="L30">			yamls = findFiles(glob: '.automagic/**/*.yaml').collectEntries{[&quot;${it.path}&quot;: readYaml(file: it.path)]}</span>
 		}
 <span class="nc" id="L32">		yamls.each{ name,yaml -&gt;</span>
-<span class="nc" id="L33">			yamls.metadata.specs.each{spec -&gt; </span>
+<span class="nc" id="L33">			yaml.metadata.specs.each{spec -&gt; </span>
 <span class="nc" id="L34">				doMagic(name, yaml, spec)</span>
 			}
 		}
