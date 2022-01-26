@@ -40,6 +40,7 @@ class MagicImpl extends Registered implements MagicService {
 		switch (kind) {
 			case 'RHEL' : return 'VL01'
 			case 'JBOSS' : return 'JBSL03'
+			case 'POSTGRESQL' : return 'PGSQL02'
 			default: throw new IllegalArgumentException("automagic is not aware of a catalog for "+kind)  
 		}
 	}
