@@ -1,0 +1,19 @@
+apiVersion: v1alpha1
+kind: VirtualMachine
+metadata:
+  SBU: CH-BCH
+  applicationName: appname
+  applicationCode: APPCODE
+  serviceOwner: ownerkey
+  serviceLevel: Silver
+  labels:
+    environment: Test
+  specs:
+    - spec:
+      status: active # one of active / decommissioned / deleted
+      id: 1d2a632b-4429-4f0d-99b1-dbe2bcad60cf
+      ServerSizeCode: S1
+      DBSize : 1
+      DBUser : dbuserkey
+      ADGroupName : adgroupname
+      catalogItem : POSTGRESQL

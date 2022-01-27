@@ -5,6 +5,7 @@ import com.baloise.automagic.common.Registered
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.magic.MagicService
 import com.baloise.automagic.oim.OneItMarketplaceService
+import com.baloise.automagic.oim.internal.MyCloudRequestBuilder
 import com.baloise.automagic.properties.PropertyStoreService
 
 class MagicImpl extends Registered implements MagicService {
@@ -79,14 +80,7 @@ class MagicImpl extends Registered implements MagicService {
 				 String changeNo = "CR"+java.util.UUID.randomUUID()
 				 echo "changeNo = $changeNo"
 				 
-				 // TODO merge the jsons and use proper templating anb logic , i.e. calculate DB drive sizes
-				 String jsonTemplateName = spec.catalogItem == 'POSTGRESQL' ? 'postgresql.json' : 'createVM.json'
-				 String req_body = libraryResource(resource:'mycloud/createVM.json').replaceAll("<changenumber>", changeNo)
-				 spec.each{ key, value ->
-					 req_body = req_body.replaceAll("<$key>", "$value")
-				 }
-				 req_body = req_body.replaceAll("<CatalogName>", getCatalogName(spec.catalogItem)) 
-				 json = oim.createVM(req_body)
+				 json = oim.createVM(yaml.metadata, spec)
 				 assert json.Status == 'Success'
 				 int request_no = json.Result as int
 				 echo "Request number is $request_no"

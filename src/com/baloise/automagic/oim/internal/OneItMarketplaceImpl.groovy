@@ -1,8 +1,12 @@
 package com.baloise.automagic.oim.internal
 
+import java.lang.invoke.SwitchPoint
+import java.util.function.Predicate
+
 import com.baloise.automagic.common.Registered
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.oim.OneItMarketplaceService
+import com.baloise.automagic.oim.internal.masterdata.MyCloudMasterData
 
 class OneItMarketplaceImpl extends Registered implements OneItMarketplaceService {
 
@@ -44,20 +48,69 @@ class OneItMarketplaceImpl extends Registered implements OneItMarketplaceService
 	}
 	
 	@Override
-	public def createVM(String jsonBody) {
-		steps.readJSON(text : myCloud("${MYC_URL_BASE}/GenericScripts/Execute/OrgEntityId/${OrgEntityId}/ScriptID/16",jsonBody))
+	public def createVM(Map metadata, Map spec) {
+		steps.readJSON(text : myCloud("${MYC_URL_BASE}/GenericScripts/Execute/OrgEntityId/${OrgEntityId}/ScriptID/16",buildRequest(metadata, spec)))
 	}
+	
+	String buildRequest(Map metadata, Map spec) {new MyCloudRequestBuilder(this).buildRequest(metadata, spec)}
 	
 	@Override
 	public def getVMDetails(String ObjectID) {
-		println ObjectID
 		steps.readJSON(text : myCloud("${MYC_URL_BASE}/V2/CI/GetCIMasterData/ObjectId/${ObjectID?:'NONE'}/ObjectType/VM"))
 	}
+	
+	@Override
+	public boolean isValid(Class keyClass, String value) {
+		MyCloudMasterData enumValue = EnumSet.allOf(keyClass).iterator().next()
+		getMasterTable(enumValue.tableName).Result.CustomTableRecords[enumValue.codeFieldName].contains(value)
+	}
+	
+	private transient Map<String, Object> masterTableCache = [:]
+	
+	@Override
+	public Object getMasterTable(String tableName) {
+		masterTableCache.computeIfAbsent(
+			"${MYC_URL_BASE}/V2/CustomTable/GetCustomTableRecordsByName/${tableName}/${OrgEntityId}/1/999?filter=IsActive=%27Y%27", 
+			{url -> steps.readJSON(text : myCloud(url))}
+		)
+	}
+	
+	private String getMapping(String tableName, Map<String, String> filter, String fieldName) {
+		getMapping(tableName, {it-> filter.every{k,v->it."${k}" == v}}, fieldName)
+	}
+	
+	private String getMapping(String tableName, Predicate p , String fieldName) {
+		getMasterTable(tableName).Result.CustomTableRecords.find{p.test(it)}."${fieldName}"
+	}
 
+	@Override
+	public String getServerTypeCode(String SBUCode) {
+		getMapping('SBUServerTypeMapping', [SBUCode:SBUCode], 'ServerTypeCode')
+	}
+	
+	@Override
+	public String getSecurityZoneCode(String ServerTypeCode, String EnvironmentCode) {
+		getMapping('BaloiseSecurityZone', 
+			{it.ServerTypeCode == ServerTypeCode && it.EnvironmentCode.split('/').contains(EnvironmentCode.toUpperCase())}
+			, 'SecurityZoneCode')
+	}
+	
+	@Override
+	public String getStorageTypeCode(String MetalCategoryCode) {
+		getMapping('BaloiseVMWAREStorageType', {it.MetalCategoryCode.split('/').contains(MetalCategoryCode)}, 'StorageCode')
+	}
+	
+	@Override
+	public String getMetalCategoryCode(String serviceLevel) {
+		getMapping('MetalCategoryMaster', [CategoryName:serviceLevel], 'CategoryCode')
+	}
+	
 	@Override
 	public String decodePassword(String encodedPassword) {
 		registry.getService(CredentialsService).withCredentials('JBOSS_MANAGEMENT_PRESHARED_KEY',['KEY']) {
 			return sh( returnStdout: true, script: "echo ${encodedPassword} | openssl enc -aes-256-cbc -md sha512 -pbkdf2 -salt -a -d -pass pass:${steps.JBOSS_MANAGEMENT_PRESHARED_KEY_KEY}").trim()
 		}
 	}
+
+
 }

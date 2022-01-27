@@ -1,0 +1,20 @@
+apiVersion: v1alpha1
+kind: VirtualMachine
+metadata:
+  SBU: CH-BCH
+  applicationName: appname
+  applicationCode: APPCODE
+  serviceOwner: ownerkey
+  serviceLevel: Silver
+  labels:
+    environment: Test
+  specs:
+    - spec:
+      status: active # one of active / decommissioned / deleted
+      id: 28f5a2fb-ecce-4dd6-9b89-bc3319da9636
+      ServerSizeCode: S1
+      ADGroupName : adgroupname2
+      MountpointUser : mountpointuser
+      catalogItem : JBOSS
+
+    
