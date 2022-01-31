@@ -75,14 +75,16 @@ class MyCloudRequestBuilder {
 			"SecurityZoneCode" : oim.getSecurityZoneCode(oim.getServerTypeCode(SBUCode), EnvironmentCode),
 			"ADGroupsDetails" : ADGroupsName,
 			"StorageTypeCode" : oim.getStorageTypeCode(MetalCategoryCode),
+			"TagDetails" : [:],
+			"AdditionalDrivesDetailsInGB" : [],
 		]
 		
 		switch(ctlItem) {
 			case POSTGRESQL : 
 				item.DBSize = spec.DBSize
-				item.DBUser = spec.DBUser
+				item.DBUserName = spec.DBUser
 				item.AdditionalDrivesDetailsInGB = [[		
-						"Size": spec.DBSize*2,		
+						"Size": "10",		
 						"MountpointUser": "postgres",		
 						"DriveName": "",		
 						"DriveOrMountPoint": "/u01/app/postgres",		
@@ -91,7 +93,7 @@ class MyCloudRequestBuilder {
 						"FileSystemType": "xfs",		
 						"IsMountPoint": "N"	
 					],[		
-						"Size": spec.DBSize*1.25,		
+						"Size": spec.DBSize*1.25 as String,		
 						"MountpointUser": "postgres",		
 						"DriveName": "",		
 						"DriveOrMountPoint": "/u01/pgdata",		
@@ -100,7 +102,7 @@ class MyCloudRequestBuilder {
 						"FileSystemType": "xfs",		
 						"IsMountPoint": "N"	
 					],[		
-						"Size": spec.DBSize*5,		
+						"Size": spec.DBSize*5 as String,		
 						"MountpointUser": "postgres",		
 						"DriveName": "",		
 						"DriveOrMountPoint": "/u99/pgbackup",		

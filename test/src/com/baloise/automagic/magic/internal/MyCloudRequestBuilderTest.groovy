@@ -83,16 +83,19 @@ class MyCloudRequestBuilderTest {
 		assertEquals('APPCODE', vm.ApplicationCode.value)
 		assertEquals(yaml.metadata.specs[0].DBSize*2, vm.AdditionalDrivesDetailsInGB.value[0].Size as int)
 		assertEquals(yaml.metadata.specs[0].DBSize*5, vm.AdditionalDrivesDetailsInGB.value[2].Size as int)
+		assertTrue(vm.TagDetails.value.isEmpty())
 	}
 	
 	@Test
 	void buildRequestJBOSS() {
 		Map yaml = new Yaml().load(new File("test/resources/testspecJBOSS.yaml").text)
-				Map request = requestBuilder.buildRequestMap(yaml.metadata, yaml.metadata.specs[0])
-				println prettyPrint(toJson(request))
-				Map vm = request.items[0]
-				assertEquals('JBSL03', vm.CatalogName.value)
-				assertEquals('jboss', vm.hdnJbossJson.value.jboss_management_user)
+		Map request = requestBuilder.buildRequestMap(yaml.metadata, yaml.metadata.specs[0])
+		println prettyPrint(toJson(request))
+		Map vm = request.items[0]
+		assertEquals('JBSL03', vm.CatalogName.value)
+		assertEquals('jboss', vm.hdnJbossJson.value.jboss_management_user)
+		assertTrue(vm.TagDetails.value.isEmpty())
+		assertTrue(vm.AdditionalDrivesDetailsInGB.value.isEmpty())
 	}
 		
 	
