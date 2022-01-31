@@ -1,4 +1,4 @@
-package com.baloise.automagic.common.internal
+package com.baloise.automagic.common.jenkins
 
 import com.cloudbees.groovy.cps.NonCPS
 import hudson.ProxyConfiguration

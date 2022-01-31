@@ -2,7 +2,7 @@ package com.baloise.automagic.common
 
 import com.baloise.automagic.cmdb.CMDBService
 import com.baloise.automagic.cmdb.internal.ValuemationCMDB
-import com.baloise.automagic.common.internal.JenkinsProxySelector
+import com.baloise.automagic.common.jenkins.JenkinsProxySelector
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.credentials.internal.JenkinsCredentials
 import com.baloise.automagic.credentials.internal.VaultCredentials
