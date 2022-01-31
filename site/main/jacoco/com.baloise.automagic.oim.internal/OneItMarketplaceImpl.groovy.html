@@ -1,64 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OneItMarketplaceImpl.groovy</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">automagic</a> &gt; <a href="index.source.html" class="el_package">com.baloise.automagic.oim.internal</a> &gt; <span class="el_source">OneItMarketplaceImpl.groovy</span></div><h1>OneItMarketplaceImpl.groovy</h1><pre class="source lang-java linenums">package com.baloise.automagic.oim.internal
 
+import java.lang.invoke.SwitchPoint
+import java.util.function.Predicate
+
 import com.baloise.automagic.common.Registered
 import com.baloise.automagic.credentials.CredentialsService
 import com.baloise.automagic.oim.OneItMarketplaceService
+import com.baloise.automagic.oim.internal.masterdata.MyCloudMasterData
 
 class OneItMarketplaceImpl extends Registered implements OneItMarketplaceService {
 
-<span class="fc" id="L9">	String MYC_URL_BASE = new String(Base64.decoder.decode('aHR0cHM6Ly9teWNsb3VkLXFhLmJhbGdyb3VwaXQuY29tL1dlYkFQSQ=='))</span>
-<span class="fc" id="L10">	String OrgEntityId =  new String(Base64.decoder.decode('T1JHLUY0OTYwQjUxLTIxQzItNENBQy05OTdDLTk3NEIxNTExMUVCNg=='))</span>
+<span class="fc" id="L13">	String MYC_URL_BASE = new String(Base64.decoder.decode('aHR0cHM6Ly9teWNsb3VkLXFhLmJhbGdyb3VwaXQuY29tL1dlYkFQSQ=='))</span>
+<span class="fc" id="L14">	String OrgEntityId =  new String(Base64.decoder.decode('T1JHLUY0OTYwQjUxLTIxQzItNENBQy05OTdDLTk3NEIxNTExMUVCNg=='))</span>
 	
 	String getToken() {
-<span class="nc" id="L13">		steps.httpRequest(url:  new String(Base64.decoder.decode('aHR0cHM6Ly9vaW0tYXBpLWJpemRldm9wcy1ub24tcHJvZC5hcHBzLmNhYXNkMDEuYmFsZ3JvdXBpdC5jb20vb2MvdjAuMS90ZXN0L2dldHRva2Vu'))).content</span>
+<span class="nc" id="L17">		steps.httpRequest(url:  new String(Base64.decoder.decode('aHR0cHM6Ly9vaW0tYXBpLWJpemRldm9wcy1ub24tcHJvZC5hcHBzLmNhYXNkMDEuYmFsZ3JvdXBpdC5jb20vb2MvdjAuMS90ZXN0L2dldHRva2Vu'))).content</span>
 	}
 	
 	String myCloud(String url, String body='') {
-<span class="nc" id="L17">		boolean ignoreSslErrors = true</span>
-<span class="nc" id="L18">		boolean consoleLogResponseBody = false</span>
+<span class="nc" id="L21">		boolean ignoreSslErrors = true</span>
+<span class="nc" id="L22">		boolean consoleLogResponseBody = false</span>
 	
-<span class="nc" id="L20">		Map params = [</span>
+<span class="nc" id="L24">		Map params = [</span>
 				consoleLogResponseBody: consoleLogResponseBody,
 				contentType: 'APPLICATION_JSON',
-<span class="nc" id="L23">				customHeaders:  [</span>
-<span class="nc" id="L24">					[maskValue: true, name: 'Authorization', value: 'Bearer '+token],</span>
+<span class="nc" id="L27">				customHeaders:  [</span>
+<span class="nc" id="L28">					[maskValue: true, name: 'Authorization', value: 'Bearer '+token],</span>
 					[maskValue: false, name: 'Offset', value: '-120']
 				],
-<span class="nc bnc" id="L27" title="All 2 branches missed.">				httpMode: (body? 'POST' : 'GET'),</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">				httpMode: (body? 'POST' : 'GET'),</span>
 				ignoreSslErrors: ignoreSslErrors,
 				url: url,
 				wrapAsMultipart: false]
-<span class="nc bnc" id="L31" title="All 2 branches missed.">		if(body) params.requestBody = body</span>
-<span class="nc" id="L32">		steps.httpRequest(params).content</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">		if(body) params.requestBody = body</span>
+<span class="nc" id="L36">		steps.httpRequest(params).content</span>
 	}
 	
 	@Override
 	public def getAllCIDetails(int requestNo) {
-<span class="nc" id="L37">		return  steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetAllCIDetails/OrgEntityId/${OrgEntityId}/?datafilter=RequestNo=%27${requestNo}%27&quot;))</span>
+<span class="nc" id="L41">		return  steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetAllCIDetails/OrgEntityId/${OrgEntityId}/?datafilter=RequestNo=%27${requestNo}%27&quot;))</span>
 	}
 	
 	
 	@Override
 	public def getRequest(int requestNo) {
-<span class="nc" id="L43">		steps.readJSON(text :  myCloud(&quot;${MYC_URL_BASE}/V2/Requests/${OrgEntityId}/RequestNo/${requestNo}/ItemNo/1&quot;))</span>
+<span class="nc" id="L47">		steps.readJSON(text :  myCloud(&quot;${MYC_URL_BASE}/V2/Requests/${OrgEntityId}/RequestNo/${requestNo}/ItemNo/1&quot;))</span>
 	}
 	
 	@Override
-	public def createVM(String jsonBody) {
-<span class="nc" id="L48">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/GenericScripts/Execute/OrgEntityId/${OrgEntityId}/ScriptID/16&quot;,jsonBody))</span>
+	public def createVM(Map metadata, Map spec) {
+<span class="nc" id="L52">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/GenericScripts/Execute/OrgEntityId/${OrgEntityId}/ScriptID/16&quot;,buildRequest(metadata, spec)))</span>
 	}
+	
+<span class="nc" id="L55">	String buildRequest(Map metadata, Map spec) {new MyCloudRequestBuilder(this).buildRequest(metadata, spec)}</span>
 	
 	@Override
 	public def getVMDetails(String ObjectID) {
-<span class="nc" id="L53">		println ObjectID</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetCIMasterData/ObjectId/${ObjectID?:'NONE'}/ObjectType/VM&quot;))</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">		steps.readJSON(text : myCloud(&quot;${MYC_URL_BASE}/V2/CI/GetCIMasterData/ObjectId/${ObjectID?:'NONE'}/ObjectType/VM&quot;))</span>
+	}
+	
+	@Override
+	public boolean isValid(Class keyClass, String value) {
+<span class="nc" id="L64">		MyCloudMasterData enumValue = EnumSet.allOf(keyClass).iterator().next()</span>
+<span class="nc" id="L65">		getMasterTable(enumValue.tableName).Result.CustomTableRecords[enumValue.codeFieldName].contains(value)</span>
+	}
+	
+	private transient Map&lt;String, Object&gt; masterTableCache = [:]
+	
+	@Override
+	public Object getMasterTable(String tableName) {
+<span class="nc" id="L72">		masterTableCache.computeIfAbsent(</span>
+			&quot;${MYC_URL_BASE}/V2/CustomTable/GetCustomTableRecordsByName/${tableName}/${OrgEntityId}/1/999?filter=IsActive=%27Y%27&quot;, 
+<span class="nc" id="L74">			{url -&gt; steps.readJSON(text : myCloud(url))}</span>
+		)
+	}
+	
+	private String getMapping(String tableName, Map&lt;String, String&gt; filter, String fieldName) {
+<span class="nc" id="L79">		getMapping(tableName, {it-&gt; filter.every{k,v-&gt;it.&quot;${k}&quot; == v}}, fieldName)</span>
+	}
+	
+	private String getMapping(String tableName, Predicate p , String fieldName) {
+<span class="nc bnc" id="L83" title="All 4 branches missed.">		getMasterTable(tableName).Result.CustomTableRecords.find{p.test(it)}.&quot;${fieldName}&quot;</span>
 	}
 
 	@Override
+	public String getServerTypeCode(String SBUCode) {
+<span class="nc" id="L88">		getMapping('SBUServerTypeMapping', [SBUCode:SBUCode], 'ServerTypeCode')</span>
+	}
+	
+	@Override
+	public String getSecurityZoneCode(String ServerTypeCode, String EnvironmentCode) {
+<span class="nc" id="L93">		getMapping('BaloiseSecurityZone', </span>
+<span class="nc bnc" id="L94" title="All 4 branches missed.">			{it.ServerTypeCode == ServerTypeCode &amp;&amp; it.EnvironmentCode.split('/').contains(EnvironmentCode.toUpperCase())}</span>
+			, 'SecurityZoneCode')
+	}
+	
+	@Override
+	public String getStorageTypeCode(String MetalCategoryCode) {
+<span class="nc" id="L100">		getMapping('BaloiseVMWAREStorageType', {it.MetalCategoryCode.split('/').contains(MetalCategoryCode)}, 'StorageCode')</span>
+	}
+	
+	@Override
+	public String getMetalCategoryCode(String serviceLevel) {
+<span class="nc" id="L105">		getMapping('MetalCategoryMaster', [CategoryName:serviceLevel], 'CategoryCode')</span>
+	}
+	
+	@Override
 	public String decodePassword(String encodedPassword) {
-<span class="nc" id="L59">		registry.getService(CredentialsService).withCredentials('JBOSS_MANAGEMENT_PRESHARED_KEY',['KEY']) {</span>
-<span class="nc" id="L60">			return sh( returnStdout: true, script: &quot;echo ${encodedPassword} | openssl enc -aes-256-cbc -md sha512 -pbkdf2 -salt -a -d -pass pass:${steps.JBOSS_MANAGEMENT_PRESHARED_KEY_KEY}&quot;).trim()</span>
+<span class="nc" id="L110">		registry.getService(CredentialsService).withCredentials('JBOSS_MANAGEMENT_PRESHARED_KEY',['KEY']) {</span>
+<span class="nc" id="L111">			return sh( returnStdout: true, script: &quot;echo ${encodedPassword} | openssl enc -aes-256-cbc -md sha512 -pbkdf2 -salt -a -d -pass pass:${steps.JBOSS_MANAGEMENT_PRESHARED_KEY_KEY}&quot;).trim()</span>
 		}
 	}
+
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

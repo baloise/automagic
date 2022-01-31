@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MyCloudRequestBuilder.groovy</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">automagic</a> &gt; <a href="index.source.html" class="el_package">com.baloise.automagic.oim.internal</a> &gt; <span class="el_source">MyCloudRequestBuilder.groovy</span></div><h1>MyCloudRequestBuilder.groovy</h1><pre class="source lang-java linenums">package com.baloise.automagic.oim.internal;
+
+import com.baloise.automagic.oim.internal.masterdata.CatalogItem
+import com.baloise.automagic.oim.internal.masterdata.Environment
+import com.baloise.automagic.oim.internal.masterdata.MetalCategory
+import com.baloise.automagic.oim.internal.masterdata.OneItMarketplaceMasterDataService
+import com.baloise.automagic.oim.internal.masterdata.SBU
+import com.baloise.automagic.oim.internal.masterdata.ServerSize
+import com.baloise.automagic.oim.internal.masterdata.ServiceLevel
+
+import static com.baloise.automagic.oim.internal.masterdata.CatalogItem.*
+import static groovy.json.JsonOutput.*
+
+class MyCloudRequestBuilder {
+	
+	OneItMarketplaceMasterDataService oim
+	
+	MyCloudRequestBuilder(OneItMarketplaceMasterDataService oim) {
+<span class="fc" id="L19">		this.oim = oim</span>
+	}
+
+	
+	Map&lt;String, Map&lt;String,String&gt;&gt; inflate(Map&lt;String,String&gt; map){
+<span class="pc" id="L24">		map.collectEntries {k,v -&gt; [(k) : [key : k , value :v]] }</span>
+	}
+
+	String buildRequest(Map metadata, Map spec) { 
+<span class="nc" id="L28">		toJson(buildRequestMap(metadata, spec)) </span>
+	}
+	
+	protected Map buildRequestMap(Map metadata, Map spec) {
+<span class="fc" id="L32">		String catalogItem = spec.catalogItem</span>
+<span class="fc" id="L33">		String SBUCode = metadata.SBU</span>
+<span class="fc" id="L34">		String serviceLevel = metadata.serviceLevel</span>
+<span class="fc" id="L35">		String ApplicationCode = metadata.applicationCode // not validated</span>
+<span class="fc" id="L36">		String ServerSizeCode =  spec.ServerSizeCode</span>
+<span class="fc" id="L37">		String EnvironmentCode = metadata.labels.environment</span>
+<span class="fc" id="L38">		String ADGroupsName = spec.ADGroupName // not validated</span>
+		
+<span class="fc" id="L40">		CatalogItem ctlItem = CatalogItem.valueOf(catalogItem)</span>
+		
+		// end parameters
+<span class="fc" id="L43">		String MetalCategoryCode = oim.getMetalCategoryCode(serviceLevel)</span>
+<span class="fc" id="L44">		String changenumber = UUID.randomUUID().toString()</span>
+		
+<span class="fc" id="L46">		Map&lt;Class, String&gt; validations = [ : ]</span>
+<span class="fc" id="L47">		validations.put(SBU, SBUCode)</span>
+<span class="fc" id="L48">		validations.put(ServiceLevel, serviceLevel)</span>
+<span class="fc" id="L49">		validations.put(ServerSize, ServerSizeCode)</span>
+<span class="fc" id="L50">		validations.put(Environment, EnvironmentCode)</span>
+		
+		
+<span class="fc" id="L53">		validations.each{clazz,value-&gt;</span>
+<span class="pc bpc" id="L54" title="2 of 4 branches missed.">			if(!oim.isValid(clazz, value)) {</span>
+<span class="pc" id="L55">				throw new IllegalArgumentException(&quot;Invalid value '${value}' for data type '${clazz.simpleName}'&quot;)</span>
+			}
+		}
+		
+<span class="fc" id="L59">		Map request = [</span>
+						&quot;servicecatalogid&quot;: &quot;6&quot;,
+						&quot;orgentityid&quot;: &quot;ORG-F4960B51-21C2-4CAC-997C-974B15111EB6&quot;,
+						&quot;changenumber&quot;: changenumber,
+						&quot;platformcode&quot;: &quot;VMWAR&quot;]
+		
+<span class="fc" id="L65">		Map item = [</span>
+			&quot;changenumber&quot;: changenumber,
+			&quot;SBUCode&quot; : SBUCode,
+<span class="fc" id="L68">			&quot;ServerTypeCode&quot; : oim.getServerTypeCode(SBUCode),</span>
+			&quot;MetalCategoryCode&quot; : MetalCategoryCode,
+			&quot;ApplicationCode&quot; : ApplicationCode,
+			&quot;ServerRoleCode&quot; : ctlItem.ServerRoleCode,
+			&quot;ServerSizeCode&quot; : ServerSizeCode,
+			&quot;CatalogName&quot; : ctlItem.CatalogName,
+			&quot;EnvironmentCode&quot; : EnvironmentCode,
+<span class="fc" id="L75">			&quot;SecurityZoneCode&quot; : oim.getSecurityZoneCode(oim.getServerTypeCode(SBUCode), EnvironmentCode),</span>
+			&quot;ADGroupsDetails&quot; : ADGroupsName,
+<span class="fc" id="L77">			&quot;StorageTypeCode&quot; : oim.getStorageTypeCode(MetalCategoryCode),</span>
+		]
+		
+<span class="fc" id="L80">		switch(ctlItem) {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			case POSTGRESQL : </span>
+<span class="fc" id="L82">				item.DBSize = spec.DBSize</span>
+<span class="fc" id="L83">				item.DBUser = spec.DBUser</span>
+<span class="fc" id="L84">				item.AdditionalDrivesDetailsInGB = [[		</span>
+<span class="fc" id="L85">						&quot;Size&quot;: spec.DBSize*2,		</span>
+						&quot;MountpointUser&quot;: &quot;postgres&quot;,		
+						&quot;DriveName&quot;: &quot;&quot;,		
+						&quot;DriveOrMountPoint&quot;: &quot;/u01/app/postgres&quot;,		
+						&quot;MountpointGroup&quot;: &quot;postgres&quot;,		
+						&quot;LVName&quot;: &quot;lv1&quot;,		
+						&quot;FileSystemType&quot;: &quot;xfs&quot;,		
+						&quot;IsMountPoint&quot;: &quot;N&quot;	
+					],[		
+<span class="fc" id="L94">						&quot;Size&quot;: spec.DBSize*1.25,		</span>
+						&quot;MountpointUser&quot;: &quot;postgres&quot;,		
+						&quot;DriveName&quot;: &quot;&quot;,		
+						&quot;DriveOrMountPoint&quot;: &quot;/u01/pgdata&quot;,		
+						&quot;MountpointGroup&quot;: &quot;postgres&quot;,		
+						&quot;LVName&quot;: &quot;lv2&quot;,		
+						&quot;FileSystemType&quot;: &quot;xfs&quot;,		
+						&quot;IsMountPoint&quot;: &quot;N&quot;	
+					],[		
+<span class="fc" id="L103">						&quot;Size&quot;: spec.DBSize*5,		</span>
+						&quot;MountpointUser&quot;: &quot;postgres&quot;,		
+						&quot;DriveName&quot;: &quot;&quot;,		
+						&quot;DriveOrMountPoint&quot;: &quot;/u99/pgbackup&quot;,		
+						&quot;MountpointGroup&quot;: &quot;postgres&quot;,		
+						&quot;LVName&quot;: &quot;lv3&quot;,		
+						&quot;FileSystemType&quot;: &quot;xfs&quot;,		
+						&quot;IsMountPoint&quot;: &quot;N&quot;	
+					]]
+<span class="pc" id="L112">			break</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			case JBOSS : </span>
+			
+<span class="fc" id="L115">			item.hdnJbossJson = [</span>
+					&quot;jdk_version&quot;: &quot;11&quot;,
+					&quot;java_min_heap_size&quot;: &quot;1300m&quot;,
+					&quot;java_max_heap_size&quot;: &quot;1310m&quot;,
+					&quot;java_metaspacesize&quot;: &quot;96M&quot;,
+					&quot;java_max_metaspacesize&quot;: &quot;256M&quot;,
+					&quot;jboss_console_log_dir&quot;: &quot;/var/log/jboss-cit&quot;,
+					&quot;jboss_home&quot;: &quot;/opt/jboss-cit/7.3.0&quot;,
+					&quot;java_home&quot;: &quot;/usr/lib/jvm/default-java&quot;,
+					&quot;jboss_config&quot;: &quot;standalone.xml&quot;,
+					&quot;management_user&quot;: &quot;Yes&quot;,
+					&quot;jboss_management_user&quot;: &quot;jboss&quot;
+				]
+<span class="fc" id="L128">			break</span>
+		}
+		
+		
+<span class="fc" id="L132">		request.items = [inflate(item)]</span>
+<span class="fc" id="L133">		request.items[0].itemno = 1</span>
+<span class="pc" id="L134">		return request</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
