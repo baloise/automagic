@@ -81,5 +81,10 @@ class OneItMarketplaceServiceRdTest {
 		Map yaml = new Yaml().load(new File("test/resources/testspecJBOSS.yaml").text)
 		println prettyPrint(oim.buildRequest(yaml.metadata, yaml.metadata.specs[0]))
 	}
+	
+	@Test
+	void getToken() {
+		println oim.getToken()
+	}
 
 }
