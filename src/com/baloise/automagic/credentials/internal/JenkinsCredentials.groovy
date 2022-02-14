@@ -15,10 +15,11 @@ class JenkinsCredentials extends Registered implements CredentialsService {
 
     @Override
     <T> T withCredentials(String scope, List<String> keys, Closure<T> action){
+    	throw new UnsupportedOperationException("need to fix this to support path in scope")
 		steps.withCredentials(
 				keys.collect{key-> steps.string(credentialsId: "AM_${scope}_${key}", variable: "${scope}_${key}".toUpperCase())},
 				action
-			)
+		)
     }
 
 	@Override

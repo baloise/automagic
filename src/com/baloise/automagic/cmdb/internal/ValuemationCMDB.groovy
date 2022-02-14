@@ -56,7 +56,7 @@ class ValuemationCMDB extends Registered implements CMDBService {
 
 
     String buildJSON(String workflowName, Map params) {
-        registry.getService(CredentialsService).withCredentials('VALUEMATION',
+        registry.getService(CredentialsService).withCredentials('secrets-devops/VALUEMATION',
               ['USERNAME', 'PASSWORD','ACCESS_TOKEN']
         ) {
             new JsonBuilder(

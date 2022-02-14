@@ -13,10 +13,11 @@ class VaultCredentials extends Registered implements CredentialsService {
     
     @Override
     <T> T withCredentials(String scope, List<String> keys, Closure<T> action){
-        steps.withVault(vaultSecrets: [
+        final String prefix = scope.split('/')[-1]
+		steps.withVault(vaultSecrets: [
                 [
-                        path: "secret/$scope",
-                        secretValues: keys.collect{key -> [envVar: "${scope}_${key}".toUpperCase(), vaultKey: key]}
+                        path: scope,
+                        secretValues: keys.collect{key -> [envVar: "${prefix}_${key}".toUpperCase(), vaultKey: key]}
                 ]
         ], action)
     }
@@ -27,7 +28,7 @@ class VaultCredentials extends Registered implements CredentialsService {
 	}
 	
 	
-	private String getVaultToken(){	withCredentials('VAULT', ['TOKEN']) { steps.VAULT_TOKEN  }}
+	private String getVaultToken(){	withCredentials('secrets-devops/VAULT', ['TOKEN']) { steps.VAULT_TOKEN  }}
 	
 	private String getVaultUrl() {GlobalVaultConfiguration.get().configuration.vaultUrl}
 	

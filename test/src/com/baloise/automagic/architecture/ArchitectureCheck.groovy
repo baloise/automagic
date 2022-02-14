@@ -22,6 +22,8 @@ class ArchitectureCheck {
     private static final ArchRule ALL_INTERNAL_CLASSES_SHOULD_BE_SERIALIZABLE = classes()
             .that()
             .resideInAPackage("..internal..")
+			.and()
+			.areNotInterfaces()
             .should()
             .implement(Serializable.class)
 
@@ -29,6 +31,8 @@ class ArchitectureCheck {
     private static final ArchRule ALL_INTERFACES_SHOULD_BE_NAMED_SERVICE = classes()
             .that()
             .areInterfaces()
+			.and()
+			.resideOutsideOfPackage("..internal..")
 			.and()
 			.doNotHaveSimpleName("Constructed")
             .should()
@@ -40,12 +44,5 @@ class ArchitectureCheck {
             .areNotInterfaces()
             .should()
             .haveSimpleNameNotEndingWith("Service");
-
-    @ArchTest
-    private static final ArchRule NO_INTERFACES_IN_INTERNAL_PACKAGES = noClasses()
-            .that()
-            .resideInAPackage("..internal..")
-            .should()
-            .beInterfaces();
 
 }

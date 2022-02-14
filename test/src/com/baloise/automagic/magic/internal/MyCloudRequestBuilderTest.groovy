@@ -81,7 +81,7 @@ class MyCloudRequestBuilderTest {
 		println prettyPrint(toJson(request))
 		Map vm = request.items[0]
 		assertEquals('APPCODE', vm.ApplicationCode.value)
-		assertEquals(yaml.metadata.specs[0].DBSize*2, vm.AdditionalDrivesDetailsInGB.value[0].Size as int)
+		assertEquals(10, vm.AdditionalDrivesDetailsInGB.value[0].Size as int)
 		assertEquals(yaml.metadata.specs[0].DBSize*5, vm.AdditionalDrivesDetailsInGB.value[2].Size as int)
 		assertTrue(vm.TagDetails.value.isEmpty())
 	}

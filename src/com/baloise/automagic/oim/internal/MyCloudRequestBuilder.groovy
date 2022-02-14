@@ -11,7 +11,9 @@ import com.baloise.automagic.oim.internal.masterdata.ServiceLevel
 import static com.baloise.automagic.oim.internal.masterdata.CatalogItem.*
 import static groovy.json.JsonOutput.*
 
-class MyCloudRequestBuilder {
+import org.apache.tools.ant.taskdefs.Javac.ImplementationSpecificArgument
+
+class MyCloudRequestBuilder implements Serializable {
 	
 	OneItMarketplaceMasterDataService oim
 	

@@ -100,14 +100,15 @@ class MagicImpl extends Registered implements MagicService {
 				 ip = json.Result[0].PrimaryIP
 				 ComputerName = json.Result[0].ComputerName
 				 echo "ComputerName is $ComputerName"
-				 echo "IP is $ip"
-				 String encodedPassword = json.Result[0].CustomField11
-				 echo "decoding and storing ${encodedPassword}" 
-				 node(''){
-					 creds.setCredentials("JBOSS", ["${ComputerName.toUpperCase()}": oim.decodePassword(encodedPassword)])
-				 }
 				 props.put('ComputerName-'+spec.id, ComputerName)
-				 if(spec.catalogItem == 'POSTGRESQL') {
+				 echo "IP is $ip"
+				 if(spec.catalogItem == 'JBOSS') {
+					 String encodedPassword = json.Result[0].CustomField11
+					 echo "decoding and storing ${encodedPassword}" 
+					 node(''){
+						 creds.setCredentials("JBOSS", ["${ComputerName.toUpperCase()}": oim.decodePassword(encodedPassword)])
+					 }
+				 } else if(spec.catalogItem == 'POSTGRESQL') {
 					 String dbName = json.Result[0].CustomField12 +json.Result[0].CustomField13
 					 props.put('DataBaseName-'+spec.id, dbName)
 				 }
@@ -129,7 +130,7 @@ class MagicImpl extends Registered implements MagicService {
 			error "createDecommissionJiraTask: invalid arguments"
 		}
 	
-		creds.withCredentials('JIRA',
+		creds.withCredentials('secrets-devops/JIRA',
 			['USERNAME', 'PASSWORD']
 	  ) {
 		  
