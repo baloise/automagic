@@ -15,9 +15,9 @@ class JenkinsCredentials extends Registered implements CredentialsService {
 
     @Override
     <T> T withCredentials(String scope, List<String> keys, Closure<T> action){
-    	throw new UnsupportedOperationException("need to fix this to support path in scope")
+		final String prefix = scope.split('/')[-1]
 		steps.withCredentials(
-				keys.collect{key-> steps.string(credentialsId: "AM_${scope}_${key}", variable: "${scope}_${key}".toUpperCase())},
+				keys.collect{key-> steps.string(credentialsId: "${prefix}_${key}".toUpperCase(), variable: "${prefix}_${key}".toUpperCase())},
 				action
 		)
     }
